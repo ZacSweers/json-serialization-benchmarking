@@ -4,6 +4,8 @@ This compares gson and moshi, reflective and streaming APIs. Streaming APIs are 
 
 Current results:
 
+(Run on a mid-2015 15" Macbook Pro. 2.8 GHz Intel Core i7, 16 GB 1600 MHz DDR3)
+
 ```
 Benchmark                             Mode  Cnt     Score    Error  Units
 SpeedTest.gson_reflective_fromJson   thrpt  200   774.555 ±  9.185  ops/s
