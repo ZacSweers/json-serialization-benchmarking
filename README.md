@@ -2,7 +2,7 @@ Misc benchmarks for json serialization
 
 This compares gson and moshi, reflective and streaming APIs. Streaming APIs are done via AutoValue models with the auto-value-gson/moshi extensions.
 
-Current results:
+Current results (higher number is better):
 
 (Run on a mid-2015 15" Macbook Pro. 2.8 GHz Intel Core i7, 16 GB 1600 MHz DDR3)
 
