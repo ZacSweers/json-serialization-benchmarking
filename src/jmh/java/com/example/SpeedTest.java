@@ -26,7 +26,7 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveMoshi {
 
-        @Setup()
+        @Setup
         public void doSetup() throws Exception {
             moshi = new Moshi.Builder().build();
             URL url = Resources.getResource("largesample.json");
@@ -42,7 +42,7 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveGson {
 
-        @Setup()
+        @Setup
         public void doSetup() throws Exception {
             gson = new GsonBuilder().create();
             URL url = Resources.getResource("largesample.json");
@@ -60,7 +60,7 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVMoshi {
 
-        @Setup()
+        @Setup
         public void doSetup() throws Exception {
             moshi = new Moshi.Builder()
                     .add(GeneratedJsonAdapterFactory.create())
@@ -81,7 +81,7 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVGson {
 
-        @Setup()
+        @Setup
         public void doSetup() throws Exception {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
