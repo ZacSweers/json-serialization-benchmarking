@@ -78,6 +78,27 @@ public class SpeedTest {
         public ResponseAV response;
     }
 
+    // An optimized moshi instance where the cache is already hot
+    @State(Scope.Benchmark)
+    public static class AVMoshiOptimized {
+
+        @Setup
+        public void doSetup() throws Exception {
+            moshi = new Moshi.Builder()
+                    .add(GeneratedJsonAdapterFactory.create())
+                    .build();
+            URL url = Resources.getResource("largesample.json");
+            json = Resources.toString(url, Charsets.UTF_8);
+            response = moshi
+                    .adapter(ResponseAV.class)
+                    .fromJson(json);
+        }
+
+        public Moshi moshi;
+        public String json;
+        public ResponseAV response;
+    }
+
     @State(Scope.Benchmark)
     public static class AVGson {
 
@@ -117,6 +138,13 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
+    public String moshi_streaming_optimized_toJson(AVMoshiOptimized param) {
+        return param.moshi.adapter(ResponseAV.class).toJson(param.response);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
     public String gson_reflective_toJson(ReflectiveGson param) {
         return param.gson.toJson(param.response);
     }
@@ -139,6 +167,13 @@ public class SpeedTest {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV moshi_streaming_fromJson(AVMoshi param) throws Exception {
+        return param.moshi.adapter(ResponseAV.class).fromJson(param.json);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public ResponseAV moshi_streaming_optimized_fromJson(AVMoshiOptimized param) throws Exception {
         return param.moshi.adapter(ResponseAV.class).fromJson(param.json);
     }
 
