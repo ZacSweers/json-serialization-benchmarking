@@ -28,9 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import okio.Buffer;
-import okio.BufferedSource;
-
 public class SpeedTest {
 
     @State(Scope.Benchmark)
@@ -99,7 +96,6 @@ public class SpeedTest {
                     .build();
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
-            source = new Buffer().writeUtf8(json);
             response = moshi
                     .adapter(ResponseAV.class)
                     .fromJson(json);
@@ -107,7 +103,6 @@ public class SpeedTest {
 
         public Moshi moshi;
         public String json;
-        public BufferedSource source;
         public ResponseAV response;
     }
 
@@ -233,7 +228,7 @@ public class SpeedTest {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV moshi_streaming_optimized_fromJson(AVMoshiOptimized param) throws Exception {
-        return param.moshi.adapter(ResponseAV.class).fromJson(param.source);
+        return param.moshi.adapter(ResponseAV.class).fromJson(param.json);
     }
 
     @Benchmark
