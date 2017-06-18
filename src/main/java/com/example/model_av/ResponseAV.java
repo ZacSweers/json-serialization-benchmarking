@@ -1,6 +1,5 @@
 package com.example.model_av;
 
-import com.example.adapter.AutoKryo;
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -12,7 +11,6 @@ import com.squareup.moshi.Moshi;
 import java.util.List;
 
 @AutoValue
-@AutoKryo
 public abstract class ResponseAV {
 
     public abstract List<UserAV> users();

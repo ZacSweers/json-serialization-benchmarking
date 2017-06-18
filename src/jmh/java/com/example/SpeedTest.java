@@ -2,18 +2,12 @@ package com.example;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy;
-import com.esotericsoftware.kryo.factories.SerializerFactory;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.example.adapter.AutoValueSerializerFactory;
 import com.example.adapter.GeneratedJsonAdapterFactory;
 import com.example.adapter.GeneratedTypeAdapterFactory;
-import com.example.model_av.FriendAV;
-import com.example.model_av.ImageAV;
-import com.example.model_av.NameAV;
 import com.example.model_av.ResponseAV;
-import com.example.model_av.UserAV;
 import com.example.model_reflective.Response;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -33,6 +27,9 @@ import org.openjdk.jmh.annotations.State;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+
+import okio.Buffer;
+import okio.BufferedSource;
 
 public class SpeedTest {
 
@@ -102,6 +99,7 @@ public class SpeedTest {
                     .build();
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
+            source = new Buffer().writeUtf8(json);
             response = moshi
                     .adapter(ResponseAV.class)
                     .fromJson(json);
@@ -109,6 +107,7 @@ public class SpeedTest {
 
         public Moshi moshi;
         public String json;
+        public BufferedSource source;
         public ResponseAV response;
     }
 
@@ -143,12 +142,7 @@ public class SpeedTest {
             DefaultInstantiatorStrategy instantiatorStrategy = new DefaultInstantiatorStrategy();
             instantiatorStrategy.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
             kryo.setInstantiatorStrategy(instantiatorStrategy);
-            SerializerFactory avSerializerFactory = new AutoValueSerializerFactory();
-            kryo.addDefaultSerializer(ResponseAV.class, avSerializerFactory);
-            kryo.addDefaultSerializer(UserAV.class, avSerializerFactory);
-            kryo.addDefaultSerializer(NameAV.class, avSerializerFactory);
-            kryo.addDefaultSerializer(ImageAV.class, avSerializerFactory);
-            kryo.addDefaultSerializer(FriendAV.class, avSerializerFactory);
+
             URL url = Resources.getResource("largesample.json");
             String json = Resources.toString(url, Charsets.UTF_8);
             response = new GsonBuilder()
@@ -160,25 +154,20 @@ public class SpeedTest {
             DefaultInstantiatorStrategy instantiatorStrategyLocal = new DefaultInstantiatorStrategy();
             instantiatorStrategyLocal.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
             kryoLocal.setInstantiatorStrategy(instantiatorStrategyLocal);
-            SerializerFactory avSerializerFactoryLocal = new AutoValueSerializerFactory();
-            kryoLocal.addDefaultSerializer(ResponseAV.class, avSerializerFactoryLocal);
-            kryoLocal.addDefaultSerializer(UserAV.class, avSerializerFactoryLocal);
-            kryoLocal.addDefaultSerializer(NameAV.class, avSerializerFactoryLocal);
-            kryoLocal.addDefaultSerializer(ImageAV.class, avSerializerFactoryLocal);
-            kryoLocal.addDefaultSerializer(FriendAV.class, avSerializerFactoryLocal);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Output output = new Output(stream);
             kryoLocal.writeObject(output, response);
             output.flush();
             bytes = stream.toByteArray();
+            responseClazz = getAutoValueClass(ResponseAV.class);
         }
 
         public Kryo kryo;
         public byte[] bytes;
         public ResponseAV response;
+        public Class<ResponseAV> responseClazz;
     }
-
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
@@ -244,7 +233,7 @@ public class SpeedTest {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV moshi_streaming_optimized_fromJson(AVMoshiOptimized param) throws Exception {
-        return param.moshi.adapter(ResponseAV.class).fromJson(param.json);
+        return param.moshi.adapter(ResponseAV.class).fromJson(param.source);
     }
 
     @Benchmark
@@ -264,8 +253,14 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV kryo_fromBytes(KryoScope param) {
-        return param.kryo.readObject(new Input(param.bytes), ResponseAV.class);
+    public ResponseAV kryo_fromBytes(KryoScope param) throws ClassNotFoundException {
+        return param.kryo.readObject(new Input(param.bytes), param.responseClazz);
     }
 
+    private static <T> Class<T> getAutoValueClass(Class<T> clazz) throws ClassNotFoundException {
+        String pkgName = clazz.getPackage().getName();
+        String className = pkgName + ".AutoValue_" + clazz.getSimpleName();
+        //noinspection unchecked
+        return (Class<T>) Class.forName(className);
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.model_av;
 
-import com.example.adapter.AutoKryo;
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -8,7 +7,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 @AutoValue
-@AutoKryo
 public abstract class NameAV {
 
     public abstract String first();
