@@ -18,6 +18,7 @@ import com.squareup.moshi.Moshi;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
@@ -28,17 +29,21 @@ import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+
 public class SpeedTest {
 
     @State(Scope.Benchmark)
     public static class ReflectiveMoshi {
 
         @Setup
-        public void doSetup() throws Exception {
+        public void setupTrial() throws Exception {
             moshi = new Moshi.Builder().build();
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
-            response = new Moshi.Builder().build().adapter(Response.class).fromJson(json);
+            response = moshi.adapter(Response.class).fromJson(json);
         }
 
         public Moshi moshi;
@@ -50,12 +55,11 @@ public class SpeedTest {
     public static class ReflectiveGson {
 
         @Setup
-        public void doSetup() throws Exception {
+        public void setupTrial() throws Exception {
             gson = new GsonBuilder().create();
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
-            response = new GsonBuilder()
-                    .create()
+            response = gson
                     .fromJson(json, Response.class);
         }
 
@@ -68,29 +72,7 @@ public class SpeedTest {
     public static class AVMoshi {
 
         @Setup
-        public void doSetup() throws Exception {
-            moshi = new Moshi.Builder()
-                    .add(GeneratedJsonAdapterFactory.create())
-                    .build();
-            URL url = Resources.getResource("largesample.json");
-            json = Resources.toString(url, Charsets.UTF_8);
-            response = new Moshi.Builder().add(GeneratedJsonAdapterFactory.create())
-                    .build()
-                    .adapter(ResponseAV.class)
-                    .fromJson(json);
-        }
-
-        public Moshi moshi;
-        public String json;
-        public ResponseAV response;
-    }
-
-    // An optimized moshi instance where the cache is already hot
-    @State(Scope.Benchmark)
-    public static class AVMoshiOptimized {
-
-        @Setup
-        public void doSetup() throws Exception {
+        public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .add(GeneratedJsonAdapterFactory.create())
                     .build();
@@ -107,18 +89,45 @@ public class SpeedTest {
     }
 
     @State(Scope.Benchmark)
+    public static class AVMoshiOptimized {
+
+        @Setup
+        public void setupTrial() throws Exception {
+            moshi = new Moshi.Builder()
+                    .add(GeneratedJsonAdapterFactory.create())
+                    .build();
+            URL url = Resources.getResource("largesample.json");
+            json = Resources.toString(url, Charsets.UTF_8);
+
+            response = moshi
+                    .adapter(ResponseAV.class)
+                    .fromJson(json);
+        }
+
+        @Setup(Level.Invocation)
+        public void setupIteration() {
+            bufferedSource = new Buffer().writeUtf8(json);
+            bufferedSink = new Buffer();
+        }
+
+        public Moshi moshi;
+        public String json;
+        public BufferedSource bufferedSource;
+        public BufferedSink bufferedSink;
+        public ResponseAV response;
+    }
+
+    @State(Scope.Benchmark)
     public static class AVGson {
 
         @Setup
-        public void doSetup() throws Exception {
+        public void setupTrial() throws Exception {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
                     .create();
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
-            response = new GsonBuilder()
-                    .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
-                    .create()
+            response = gson
                     .fromJson(json, ResponseAV.class);
         }
 
@@ -131,7 +140,7 @@ public class SpeedTest {
     public static class KryoScope {
 
         @Setup
-        public void doSetup() throws Exception {
+        public void setupTrial() throws Exception {
             kryo = new Kryo();
             kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
             DefaultInstantiatorStrategy instantiatorStrategy = new DefaultInstantiatorStrategy();
@@ -144,15 +153,10 @@ public class SpeedTest {
                     .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
                     .create()
                     .fromJson(json, ResponseAV.class);
-            Kryo kryoLocal = new Kryo();
-            kryoLocal.setDefaultSerializer(CompatibleFieldSerializer.class);
-            DefaultInstantiatorStrategy instantiatorStrategyLocal = new DefaultInstantiatorStrategy();
-            instantiatorStrategyLocal.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-            kryoLocal.setInstantiatorStrategy(instantiatorStrategyLocal);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Output output = new Output(stream);
-            kryoLocal.writeObject(output, response);
+            kryo.writeObject(output, response);
             output.flush();
             bytes = stream.toByteArray();
             responseClazz = getAutoValueClass(ResponseAV.class);
@@ -181,8 +185,9 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String moshi_streaming_optimized_toJson(AVMoshiOptimized param) {
-        return param.moshi.adapter(ResponseAV.class).toJson(param.response);
+    public BufferedSink moshi_streaming_toJson_optimized(AVMoshiOptimized param) throws Exception {
+        param.moshi.adapter(ResponseAV.class).toJson(param.bufferedSink, param.response);
+        return param.bufferedSink;
     }
 
     @Benchmark
@@ -227,8 +232,8 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV moshi_streaming_optimized_fromJson(AVMoshiOptimized param) throws Exception {
-        return param.moshi.adapter(ResponseAV.class).fromJson(param.json);
+    public ResponseAV moshi_streaming_fromJson_optimized(AVMoshiOptimized param) throws Exception {
+        return param.moshi.adapter(ResponseAV.class).fromJson(param.bufferedSource);
     }
 
     @Benchmark
