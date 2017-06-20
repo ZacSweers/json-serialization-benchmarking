@@ -26,6 +26,10 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -89,7 +93,7 @@ public class SpeedTest {
     }
 
     @State(Scope.Benchmark)
-    public static class AVMoshiOptimized {
+    public static class AVMoshiBuffer {
 
         @Setup
         public void setupTrial() throws Exception {
@@ -133,6 +137,33 @@ public class SpeedTest {
 
         public Gson gson;
         public String json;
+        public ResponseAV response;
+    }
+
+    @State(Scope.Benchmark)
+    public static class AVGsonBuffer {
+
+        @Setup
+        public void setupTrial() throws Exception {
+            gson = new GsonBuilder()
+                    .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
+                    .create();
+            URL url = Resources.getResource("largesample.json");
+            json = Resources.toString(url, Charsets.UTF_8);
+            response = gson
+                    .fromJson(json, ResponseAV.class);
+        }
+
+        @Setup(Level.Invocation)
+        public void setupIteration() {
+            source = new InputStreamReader(new Buffer().writeUtf8(json).inputStream(), Charsets.UTF_8);
+            sink = new OutputStreamWriter(new Buffer().outputStream(), Charsets.UTF_8);
+        }
+
+        public Gson gson;
+        public String json;
+        public Reader source;
+        public Writer sink;
         public ResponseAV response;
     }
 
@@ -185,7 +216,7 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public BufferedSink moshi_streaming_toJson_optimized(AVMoshiOptimized param) throws Exception {
+    public BufferedSink moshi_streaming_toJson_buffer(AVMoshiBuffer param) throws Exception {
         param.moshi.adapter(ResponseAV.class).toJson(param.bufferedSink, param.response);
         return param.bufferedSink;
     }
@@ -202,6 +233,14 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public String gson_streaming_toJson(AVGson param) {
         return param.gson.toJson(param.response);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public Writer gson_streaming_toJson_buffer(AVGsonBuffer param) {
+        param.gson.toJson(param.response, param.sink);
+        return param.sink;
     }
 
     @Benchmark
@@ -232,7 +271,7 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV moshi_streaming_fromJson_optimized(AVMoshiOptimized param) throws Exception {
+    public ResponseAV moshi_streaming_fromJson_buffer(AVMoshiBuffer param) throws Exception {
         return param.moshi.adapter(ResponseAV.class).fromJson(param.bufferedSource);
     }
 
@@ -248,6 +287,13 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV gson_streaming_fromJson(AVGson param) {
         return param.gson.fromJson(param.json, ResponseAV.class);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public ResponseAV gson_streaming_fromJson_buffer(AVGsonBuffer param) {
+        return param.gson.fromJson(param.source, ResponseAV.class);
     }
 
     @Benchmark
