@@ -40,6 +40,20 @@ import okio.BufferedSource;
 public class SpeedTest {
 
     @State(Scope.Benchmark)
+    public static class KSerializer {
+
+        @Setup()
+        public void doSetup() throws Exception {
+            URL url = Resources.getResource("largesample.json");
+            json = Resources.toString(url, Charsets.UTF_8);
+            response = Response.parse(json);
+        }
+
+        public String json;
+        public Response response;
+    }
+
+    @State(Scope.Benchmark)
     public static class ReflectiveMoshi {
 
         @Setup
@@ -198,6 +212,12 @@ public class SpeedTest {
         public ResponseAV response;
         public Class<ResponseAV> responseClazz;
     }
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public String kserializer_toJson(KSerializer param) {
+        return param.response.stringify();
+    }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
@@ -252,6 +272,13 @@ public class SpeedTest {
         param.kryo.writeObject(output, param.response);
         output.flush();
         return stream.toByteArray();
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public Response kserializer_fromJson(KSerializer param) {
+        return Response.parse(param.json);
     }
 
     @Benchmark
