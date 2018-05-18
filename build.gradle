@@ -1,13 +1,18 @@
 buildscript {
+    ext.kotlin_version = '1.2.21'
+    ext.serialization_version = '0.4.1'
     repositories {
         jcenter()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven { url "https://kotlin.bintray.com/kotlinx" }
     }
     dependencies {
         classpath "me.champeau.gradle:jmh-gradle-plugin:0.3.1"
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.10"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version"
     }
 }
 
@@ -15,6 +20,8 @@ group 'com.example'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'kotlinx-serialization'
 apply plugin: 'idea'
 apply plugin: "net.ltgt.apt"
 apply plugin: "me.champeau.gradle.jmh"
@@ -24,6 +31,7 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencies {
@@ -43,6 +51,8 @@ dependencies {
     compile 'com.esotericsoftware:kryo:4.0.0'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
 }
 
 task wrapper(type: Wrapper) {
