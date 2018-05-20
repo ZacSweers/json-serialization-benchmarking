@@ -45,17 +45,19 @@ jmh {
 
 dependencies {
 
-    kapt 'com.google.auto.value:auto-value:1.4.1'
+    kapt 'com.google.auto.value:auto-value-annotations:1.6'
+    kapt 'com.google.auto.value:auto-value:1.6'
     kapt 'com.ryanharter.auto.value:auto-value-gson:0.7.0'
     kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
 
-    compileOnly 'com.google.auto.value:auto-value:1.4.1'
+    compileOnly 'com.google.auto.value:auto-value-annotations:1.6'
     compileOnly 'com.ryanharter.auto.value:auto-value-gson:0.7.0'
     compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
 
     jmh 'com.google.guava:guava:24.1.1-jre'
     jmh 'com.squareup.okio:okio:1.15.0-20180513.011724-12'
+    compile 'com.google.auto.value:auto-value-annotations:1.6'
     compile "org.openjdk.jmh:jmh-core:$jmh_version"
     compile 'com.google.guava:guava:22.0'
     compile 'com.google.guava:guava:24.1.1-jre'
