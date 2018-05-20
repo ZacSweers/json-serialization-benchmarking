@@ -314,35 +314,35 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String kserializer_toJson(KSerializer param) throws IOException {
+    public String kserializer_string_toJson(KSerializer param) throws IOException {
         return param.response.stringify();
     }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String moshi_reflective_toJson(ReflectiveMoshi param) throws IOException {
+    public String moshi_reflective_string_toJson(ReflectiveMoshi param) throws IOException {
         return param.moshi.adapter(Response.class).toJson(param.response);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String moshi_autovalue_toJson(AVMoshi param) throws IOException {
+    public String moshi_autovalue_string_toJson(AVMoshi param) throws IOException {
         return param.moshi.adapter(ResponseAV.class).toJson(param.response);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String moshi_kotlin_reflective_toJson(ReflectiveMoshiKotlin param) throws IOException {
+    public String moshi_kotlin_reflective_string_toJson(ReflectiveMoshiKotlin param) throws IOException {
         return param.moshi.adapter(KRResponse.class).toJson(param.response);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String moshi_kotlin_codegen_toJson(CodegenMoshiKotlin param) throws IOException {
+    public String moshi_kotlin_codegen_string_toJson(CodegenMoshiKotlin param) throws IOException {
         return param.moshi.adapter(KCGResponse.class).toJson(param.response);
     }
 
@@ -373,14 +373,14 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String gson_reflective_toJson(ReflectiveGson param) throws IOException {
+    public String gson_reflective_string_toJson(ReflectiveGson param) throws IOException {
         return param.gson.toJson(param.response);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public String gson_autovalue_toJson(AVGson param) throws IOException {
+    public String gson_autovalue_string_toJson(AVGson param) throws IOException {
         return param.gson.toJson(param.response);
     }
 
