@@ -48,6 +48,7 @@ dependencies {
     compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
 
     jmh 'com.google.guava:guava:24.1.1-jre'
+    jmh 'com.squareup.okio:okio:1.15.0-20180513.011724-12'
     compile 'com.squareup.moshi:moshi-kotlin:1.6.0'
     compile 'com.squareup.okio:okio:1.15.0-20180513.011724-12'
     compile 'com.squareup.moshi:moshi:1.6.0'
