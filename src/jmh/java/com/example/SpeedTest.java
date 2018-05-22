@@ -48,10 +48,13 @@ public class SpeedTest {
         public void doSetup() throws Exception {
             URL url = Resources.getResource("largesample.json");
             json = Resources.toString(url, Charsets.UTF_8);
+            URL url2 = Resources.getResource("largesample_minified.json");
+            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             response = Response.parse(json);
         }
 
         public String json;
+        public String minifiedJson;
         public Response response;
     }
 
@@ -440,6 +443,13 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public Response kserializer_string_fromJson(KSerializer param) throws IOException {
         return Response.parse(param.json);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public Response kserializer_string_fromJson_minified(KSerializer param) throws IOException {
+        return Response.parse(param.minifiedJson);
     }
 
     @Benchmark
