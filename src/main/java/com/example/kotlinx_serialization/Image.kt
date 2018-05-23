@@ -1,4 +1,4 @@
-package com.example.model_reflective
+package com.example.kotlinx_serialization
 
 import kotlinx.serialization.Serializable
 
