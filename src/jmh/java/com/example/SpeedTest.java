@@ -8,6 +8,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.example.adapter.GeneratedJsonAdapterFactory;
 import com.example.adapter.GeneratedTypeAdapterFactory;
 import com.example.kotlinx_serialization.Response;
+import com.example.model_dc.ResponseDC;
 import com.example.model_av.ResponseAV;
 import com.example.moshiKotlinCodegen.KCGResponse;
 import com.example.moshiKotlinReflective.KRResponse;
@@ -89,6 +90,23 @@ public class SpeedTest {
         public Gson gson;
         public String json;
         public Response response;
+    }
+
+    @State(Scope.Benchmark)
+    public static class ReflectiveDataClassGson {
+
+        @Setup
+        public void setupTrial() throws Exception {
+            gson = new GsonBuilder().create();
+            URL url = Resources.getResource("largesample.json");
+            json = Resources.toString(url, Charsets.UTF_8);
+            responseDC = gson
+                .fromJson(json, ResponseDC.class);
+        }
+
+        public Gson gson;
+        public String json;
+        public ResponseDC responseDC;
     }
 
     @State(Scope.Benchmark)
@@ -415,6 +433,13 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
+    public String gson_data_class_reflective_string_toJson(ReflectiveDataClassGson param) throws IOException {
+        return param.gson.toJson(param.responseDC);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
     public String gson_autovalue_string_toJson(AVGson param) throws IOException {
         return param.gson.toJson(param.response);
     }
@@ -541,6 +566,13 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public Response gson_reflective_string_fromJson(ReflectiveGson param) throws IOException {
         return param.gson.fromJson(param.json, Response.class);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public ResponseDC gson_data_class_reflective_string_fromJson(ReflectiveGson param) throws IOException {
+        return param.gson.fromJson(param.json, ResponseDC.class);
     }
 
     @Benchmark
