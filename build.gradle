@@ -52,11 +52,11 @@ dependencies {
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.7.0'
 
     compileOnly 'com.google.auto.value:auto-value-annotations:1.6'
-    compileOnly 'com.ryanharter.auto.value:auto-value-gson:1.0.0'
     compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
 
     jmh 'com.google.guava:guava:27.0.1-jre'
     jmh 'com.squareup.okio:okio:2.2.2'
+    compile 'com.ryanharter.auto.value:auto-value-gson-runtime:1.0.0'
     compile 'com.google.auto.value:auto-value-annotations:1.6'
     compile "org.openjdk.jmh:jmh-core:$jmh_version"
     compile 'com.google.guava:guava:27.0.1-jre'
