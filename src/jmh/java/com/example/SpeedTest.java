@@ -353,6 +353,7 @@ public class SpeedTest {
         public byte[] bytes;
         public ResponseAV response;
         public Class<ResponseAV> responseClazz;
+        // Using the serializer directly doesn't appear to handle object begin/end
         public Serializer<ResponseAV> serializer;
     }
 
@@ -443,7 +444,7 @@ public class SpeedTest {
     public byte[] kryo_toBytes(KryoScope param) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Output output = new Output(stream);
-        param.serializer.write(param.kryo, output, param.response);
+        param.kryo.writeObject(output, param.response);
         output.flush();
         return stream.toByteArray();
     }
@@ -585,7 +586,7 @@ public class SpeedTest {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV kryo_fromBytes(KryoScope param) throws IOException {
-        return param.serializer.read(param.kryo, new Input(param.bytes), param.responseClazz);
+        return param.kryo.readObject(new Input(param.bytes), param.responseClazz);
     }
 
     private static <T> Class<T> getAutoValueClass(Class<T> clazz) throws ClassNotFoundException {
