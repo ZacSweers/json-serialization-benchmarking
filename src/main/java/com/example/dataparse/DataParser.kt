@@ -1,5 +1,7 @@
 package com.example.dataparse
 
+import java.util.Locale
+
 fun main() {
 
   val data = """
@@ -55,19 +57,34 @@ SpeedTest.moshi_reflective_string_toJson                    thrpt   25  1420.034
 }
 
 private fun printResults(type: ResultType, results: List<Analysis>) {
-  val groupedResults = type.groupings.associate { grouping -> grouping to results.filter { grouping.matchFunction(it.benchmark) } }
+  val groupedResults = type.groupings.associate { grouping ->
+    grouping to results.filter {
+      grouping.matchFunction(it.benchmark)
+    }
+  }
+  val benchmarkLength = results.maxBy { it.benchmark.length }!!.benchmark.length
+  val scoreLength = results.maxBy { it.score.toString().length }!!.score.toString().length
+  val errorLength = results.maxBy { it.error.toString().length }!!.error.toString().length
 
   check(groupedResults.values.flatten().size == results.size) {
     "Missing information!"
   }
 
-  println()
-  println(type.description)
-  groupedResults.forEach { (grouping, matchedAnalyses) ->
-    println()
-    println(grouping.name)
-    matchedAnalyses.sortedByDescending { it.score }.forEach { println(it) }
+  val output = buildString {
+    appendln()
+    append(type.description)
+    appendln(':')
+    appendln()
+    appendln("```")
+    groupedResults.entries
+        .joinTo(this, "\n\n", postfix = "\n```") { (grouping, matchedAnalyses) ->
+          val content = matchedAnalyses.sortedByDescending { it.score }
+              .joinToString("\n") { it.formattedString(benchmarkLength, scoreLength, errorLength) }
+          "${grouping.name}\n$content"
+        }
   }
+
+  println(output)
 }
 
 private enum class ResultType(val description: String, val groupings: List<Grouping>) {
@@ -121,6 +138,12 @@ private data class Analysis(
     val units: String
 ) {
   override fun toString() = "$benchmark\t$mode\t$count\t$score\t±\t$error\t$units"
+  fun formattedString(benchmarkLength: Int, scoreLength: Int, errorLength: Int): String {
+    return String.format(Locale.US,
+        "%-${benchmarkLength}s  %s  %s  %-${scoreLength}s  ±  %-${errorLength}s  %s",
+        benchmark, mode, count, score, error, units)
+  }
+
 }
 
 private operator fun <T> List<T>.component6(): T = this[5]
