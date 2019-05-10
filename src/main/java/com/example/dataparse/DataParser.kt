@@ -140,7 +140,7 @@ private data class Analysis(
   override fun toString() = "$benchmark\t$mode\t$count\t$score\t±\t$error\t$units"
   fun formattedString(benchmarkLength: Int, scoreLength: Int, errorLength: Int): String {
     return String.format(Locale.US,
-        "%-${benchmarkLength}s  %s  %s  %-${scoreLength}s  ±  %-${errorLength}s  %s",
+        "%-${benchmarkLength}s  %s  %s  %${scoreLength}s  ±  %${errorLength}s  %s",
         benchmark, mode, count, score, error, units)
   }
 
