@@ -3,10 +3,10 @@ Misc benchmarks for json serialization
 ## Notes
 
 - This test compares...
-  - Gson, moshi, kotlinx serialization, and Kryo (as an alternative serialization comparison)
+  - Gson, moshi, kotlinx serialization
   - Reflective vs streaming APIs (via code gen)
   - Moshi's kotlin support (reflective or code gen for streaming APIs)
-- Note kotlinx serialization and kryo only work via reflection (kryo) or the standard compiler plugin (kotlin)
+- Note kotlinx serialization only works via the standard compiler plugin
 - "Minified" means the json was minified with whitespaces between keys and values removed.
 - AutoValue APIs are done via AutoValue models with the auto-value-gson/moshi extensions, thus using generated adapters.
 - Kotlin codegen generates kotlin JsonAdapters.
@@ -16,197 +16,137 @@ Misc benchmarks for json serialization
 
 ## TL;DR
 
-* Fastest reader: GSON
+* Fastest reader: Moshi
 * Fastest writer: Moshi
 
-Speed is not everything though! Different libraries come with different tradeoffs. That said, these *are* benchmarks.
+Speed is not everything though! Different libraries come with different trade offs. That said, these *are* benchmarks.
 
 ## Current raw results (higher score is better)
 
 Run on a mid-2015 15" Macbook Pro. 2.8 GHz Intel Core i7, 16 GB 1600 MHz DDR3
 
-```
-# Run complete. Total time: 03:37:38
-
-Benchmark                                                    Mode  Cnt     Score    Error  Units
-SpeedTest.gson_autovalue_buffer_fromJson                    thrpt  200  1305.687 ±  4.756  ops/s
-SpeedTest.gson_autovalue_buffer_fromJson_minified           thrpt  200  1500.076 ±  3.238  ops/s
-SpeedTest.gson_autovalue_buffer_toJson                      thrpt  200   616.999 ±  1.365  ops/s
-SpeedTest.gson_autovalue_string_fromJson                    thrpt  200  1501.642 ± 16.501  ops/s
-SpeedTest.gson_autovalue_string_fromJson_minified           thrpt  200  1610.007 ± 23.511  ops/s
-SpeedTest.gson_autovalue_string_toJson                      thrpt  200  1221.374 ±  2.972  ops/s
-SpeedTest.gson_reflective_string_fromJson                   thrpt  200  1429.620 ±  8.491  ops/s
-SpeedTest.gson_reflective_string_toJson                     thrpt  200   977.967 ±  4.039  ops/s
-SpeedTest.kryo_fromBytes                                    thrpt  200  1337.743 ±  3.532  ops/s
-SpeedTest.kryo_toBytes                                      thrpt  200   951.468 ±  1.999  ops/s
-SpeedTest.kserializer_string_fromJson                       thrpt  200   933.622 ± 58.509  ops/s
-SpeedTest.kserializer_string_fromJson_minified              thrpt  200  1116.711 ± 68.464  ops/s
-SpeedTest.kserializer_string_toJson                         thrpt  200  1197.405 ± 13.311  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson                   thrpt  200  1019.747 ±  4.865  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson_minified          thrpt  200  1374.263 ±  4.125  ops/s
-SpeedTest.moshi_autovalue_buffer_toJson                     thrpt  200  1659.574 ± 15.520  ops/s
-SpeedTest.moshi_autovalue_string_fromJson                   thrpt  200   884.915 ±  8.067  ops/s
-SpeedTest.moshi_autovalue_string_fromJson_minified          thrpt  200  1187.466 ±  8.148  ops/s
-SpeedTest.moshi_autovalue_string_toJson                     thrpt  200  1486.164 ±  7.188  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson              thrpt  200  1008.205 ±  5.708  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt  200  1345.220 ±  3.571  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_toJson                thrpt  200  1699.049 ±  9.304  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson              thrpt  200   894.285 ±  4.104  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson_minified     thrpt  200  1198.403 ±  5.119  ops/s
-SpeedTest.moshi_kotlin_codegen_string_toJson                thrpt  200  1484.823 ±  3.913  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson           thrpt  200   891.004 ±  3.154  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt  200  1134.176 ±  3.934  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_toJson             thrpt  200  1335.505 ± 18.700  ops/s
-SpeedTest.moshi_kotlin_reflective_string_fromJson           thrpt  200   784.143 ±  5.367  ops/s
-SpeedTest.moshi_kotlin_reflective_string_toJson             thrpt  200  1206.002 ±  5.596  ops/s
-SpeedTest.moshi_reflective_string_fromJson                  thrpt  200   853.909 ±  4.197  ops/s
-SpeedTest.moshi_reflective_string_toJson                    thrpt  200  1383.914 ±  9.629  ops/s
-```
-
-Grouped by serialization type (read, write, buffered, string):
+Raw
 
 ```
 Benchmark                                                    Mode  Cnt     Score    Error  Units
-
-// Reading from a JSON buffered input
-SpeedTest.gson_autovalue_buffer_fromJson                    thrpt  200  1305.687 ±  4.756  ops/s
-SpeedTest.gson_autovalue_buffer_fromJson_minified           thrpt  200  1500.076 ±  3.238  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson                   thrpt  200  1019.747 ±  4.865  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson_minified          thrpt  200  1374.263 ±  4.125  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson              thrpt  200  1008.205 ±  5.708  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt  200  1345.220 ±  3.571  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson           thrpt  200   891.004 ±  3.154  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt  200  1134.176 ±  3.934  ops/s
-
-// Reading from JSON String
-SpeedTest.gson_autovalue_string_fromJson                    thrpt  200  1501.642 ± 16.501  ops/s
-SpeedTest.gson_autovalue_string_fromJson_minified           thrpt  200  1610.007 ± 23.511  ops/s
-SpeedTest.gson_reflective_string_fromJson                   thrpt  200  1429.620 ±  8.491  ops/s
-SpeedTest.kserializer_string_fromJson                       thrpt  200   933.622 ± 58.509  ops/s
-SpeedTest.kserializer_string_fromJson_minified              thrpt  200  1116.711 ± 68.464  ops/s
-SpeedTest.moshi_autovalue_string_fromJson                   thrpt  200   884.915 ±  8.067  ops/s
-SpeedTest.moshi_autovalue_string_fromJson_minified          thrpt  200  1187.466 ±  8.148  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson              thrpt  200   894.285 ±  4.104  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson_minified     thrpt  200  1198.403 ±  5.119  ops/s
-SpeedTest.moshi_kotlin_reflective_string_fromJson           thrpt  200   784.143 ±  5.367  ops/s
-SpeedTest.moshi_reflective_string_fromJson                  thrpt  200   853.909 ±  4.197  ops/s
-
-// Writing JSON to a buffered output
-SpeedTest.gson_autovalue_buffer_toJson                      thrpt  200   616.999 ±  1.365  ops/s
-SpeedTest.moshi_autovalue_buffer_toJson                     thrpt  200  1659.574 ± 15.520  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_toJson                thrpt  200  1699.049 ±  9.304  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_toJson             thrpt  200  1335.505 ± 18.700  ops/s
-
-// Writing out a JSON String
-SpeedTest.gson_autovalue_string_toJson                      thrpt  200  1221.374 ±  2.972  ops/s
-SpeedTest.gson_reflective_string_toJson                     thrpt  200   977.967 ±  4.039  ops/s
-SpeedTest.kserializer_string_toJson                         thrpt  200  1197.405 ± 13.311  ops/s
-SpeedTest.moshi_autovalue_string_toJson                     thrpt  200  1486.164 ±  7.188  ops/s
-SpeedTest.moshi_kotlin_codegen_string_toJson                thrpt  200  1484.823 ±  3.913  ops/s
-SpeedTest.moshi_kotlin_reflective_string_toJson             thrpt  200  1206.002 ±  5.596  ops/s
-SpeedTest.moshi_reflective_string_toJson                    thrpt  200  1383.914 ±  9.629  ops/s
-
-// Kryo for alternative comparison
-SpeedTest.kryo_fromBytes                                    thrpt  200  1337.743 ±  3.532  ops/s
-SpeedTest.kryo_toBytes                                      thrpt  200   951.468 ±  1.999  ops/s
+SpeedTest.gson_autovalue_buffer_fromJson                    thrpt   25  1222.809 ±  6.776  ops/s
+SpeedTest.gson_autovalue_buffer_fromJson_minified           thrpt   25  1336.091 ± 16.250  ops/s
+SpeedTest.gson_autovalue_buffer_toJson                      thrpt   25   642.586 ± 19.840  ops/s
+SpeedTest.gson_autovalue_string_fromJson                    thrpt   25  1295.682 ± 24.112  ops/s
+SpeedTest.gson_autovalue_string_fromJson_minified           thrpt   25  1422.573 ± 17.722  ops/s
+SpeedTest.gson_autovalue_string_toJson                      thrpt   25  1212.849 ± 17.831  ops/s
+SpeedTest.gson_reflective_string_fromJson                   thrpt   25  1388.944 ± 24.591  ops/s
+SpeedTest.gson_reflective_string_toJson                     thrpt   25  1012.079 ±  9.862  ops/s
+SpeedTest.kserializer_string_fromJson                       thrpt   25  1413.365 ± 13.823  ops/s
+SpeedTest.kserializer_string_fromJson_minified              thrpt   25  1639.444 ± 14.787  ops/s
+SpeedTest.kserializer_string_toJson                         thrpt   25  1340.387 ±  8.966  ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson                   thrpt   25   974.813 ± 12.968  ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson_minified          thrpt   25   959.581 ± 13.067  ops/s
+SpeedTest.moshi_autovalue_buffer_toJson                     thrpt   25  1577.050 ± 77.249  ops/s
+SpeedTest.moshi_autovalue_string_fromJson                   thrpt   25   888.303 ±  6.405  ops/s
+SpeedTest.moshi_autovalue_string_fromJson_minified          thrpt   25  1199.122 ±  9.959  ops/s
+SpeedTest.moshi_autovalue_string_toJson                     thrpt   25  1477.759 ± 12.712  ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson              thrpt   25   984.343 ± 14.441  ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt   25  1375.027 ± 35.050  ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_toJson                thrpt   25  1572.972 ± 95.974  ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson              thrpt   25   872.131 ±  5.331  ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson_minified     thrpt   25  1205.473 ±  7.955  ops/s
+SpeedTest.moshi_kotlin_codegen_string_toJson                thrpt   25  1473.877 ± 14.480  ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson           thrpt   25   838.602 ±  7.488  ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt   25  1128.853 ±  9.983  ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_toJson             thrpt   25  1372.856 ± 22.928  ops/s
+SpeedTest.moshi_kotlin_reflective_string_fromJson           thrpt   25   741.541 ± 24.851  ops/s
+SpeedTest.moshi_kotlin_reflective_string_toJson             thrpt   25  1186.398 ± 21.733  ops/s
+SpeedTest.moshi_reflective_string_fromJson                  thrpt   25   791.379 ± 11.537  ops/s
+SpeedTest.moshi_reflective_string_toJson                    thrpt   25  1420.034 ± 17.002  ops/s
 ```
 
-Grouped by library (interesting to see how reflection vs custom adapters affects perf within a library):
+Grouped by serialization type (read, write, buffered, string)
 
 ```
-Benchmark                                                    Mode  Cnt     Score    Error  Units
+Read (buffered)
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified	thrpt	25	1375.027	±	35.05	ops/s
+SpeedTest.gson_autovalue_buffer_fromJson_minified	thrpt	25	1336.091	±	16.25	ops/s
+SpeedTest.gson_autovalue_buffer_fromJson	thrpt	25	1222.809	±	6.776	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified	thrpt	25	1128.853	±	9.983	ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson	thrpt	25	984.343	±	14.441	ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson	thrpt	25	974.813	±	12.968	ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson_minified	thrpt	25	959.581	±	13.067	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson	thrpt	25	838.602	±	7.488	ops/s
 
-// GSON
-SpeedTest.gson_autovalue_buffer_fromJson                    thrpt  200  1305.687 ±  4.756  ops/s
-SpeedTest.gson_autovalue_buffer_fromJson_minified           thrpt  200  1500.076 ±  3.238  ops/s
-SpeedTest.gson_autovalue_buffer_toJson                      thrpt  200   616.999 ±  1.365  ops/s
-SpeedTest.gson_autovalue_string_fromJson                    thrpt  200  1501.642 ± 16.501  ops/s
-SpeedTest.gson_autovalue_string_fromJson_minified           thrpt  200  1610.007 ± 23.511  ops/s
-SpeedTest.gson_autovalue_string_toJson                      thrpt  200  1221.374 ±  2.972  ops/s
-SpeedTest.gson_reflective_string_fromJson                   thrpt  200  1429.620 ±  8.491  ops/s
-SpeedTest.gson_reflective_string_toJson                     thrpt  200   977.967 ±  4.039  ops/s
+Read (string)
+SpeedTest.kserializer_string_fromJson_minified	thrpt	25	1639.444	±	14.787	ops/s
+SpeedTest.gson_autovalue_string_fromJson_minified	thrpt	25	1422.573	±	17.722	ops/s
+SpeedTest.kserializer_string_fromJson	thrpt	25	1413.365	±	13.823	ops/s
+SpeedTest.gson_reflective_string_fromJson	thrpt	25	1388.944	±	24.591	ops/s
+SpeedTest.gson_autovalue_string_fromJson	thrpt	25	1295.682	±	24.112	ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson_minified	thrpt	25	1205.473	±	7.955	ops/s
+SpeedTest.moshi_autovalue_string_fromJson_minified	thrpt	25	1199.122	±	9.959	ops/s
+SpeedTest.moshi_autovalue_string_fromJson	thrpt	25	888.303	±	6.405	ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson	thrpt	25	872.131	±	5.331	ops/s
+SpeedTest.moshi_reflective_string_fromJson	thrpt	25	791.379	±	11.537	ops/s
+SpeedTest.moshi_kotlin_reflective_string_fromJson	thrpt	25	741.541	±	24.851	ops/s
 
-// Kryo
-SpeedTest.kryo_fromBytes                                    thrpt  200  1337.743 ±  3.532  ops/s
-SpeedTest.kryo_toBytes                                      thrpt  200   951.468 ±  1.999  ops/s
+Write (buffered)
+SpeedTest.moshi_autovalue_buffer_toJson	thrpt	25	1577.05	±	77.249	ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_toJson	thrpt	25	1572.972	±	95.974	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_toJson	thrpt	25	1372.856	±	22.928	ops/s
+SpeedTest.gson_autovalue_buffer_toJson	thrpt	25	642.586	±	19.84	ops/s
 
-// Kotlinx Serialization
-SpeedTest.kserializer_string_fromJson                       thrpt  200   933.622 ± 58.509  ops/s
-SpeedTest.kserializer_string_fromJson_minified              thrpt  200  1116.711 ± 68.464  ops/s
-SpeedTest.kserializer_string_toJson                         thrpt  200  1197.405 ± 13.311  ops/s
-
-// Moshi
-SpeedTest.moshi_autovalue_buffer_fromJson                   thrpt  200  1019.747 ±  4.865  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson_minified          thrpt  200  1374.263 ±  4.125  ops/s
-SpeedTest.moshi_autovalue_buffer_toJson                     thrpt  200  1659.574 ± 15.520  ops/s
-SpeedTest.moshi_autovalue_string_fromJson                   thrpt  200   884.915 ±  8.067  ops/s
-SpeedTest.moshi_autovalue_string_fromJson_minified          thrpt  200  1187.466 ±  8.148  ops/s
-SpeedTest.moshi_autovalue_string_toJson                     thrpt  200  1486.164 ±  7.188  ops/s
-SpeedTest.moshi_reflective_string_fromJson                  thrpt  200   853.909 ±  4.197  ops/s
-SpeedTest.moshi_reflective_string_toJson                    thrpt  200  1383.914 ±  9.629  ops/s
-
-// Moshi Kotlin
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson              thrpt  200  1008.205 ±  5.708  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt  200  1345.220 ±  3.571  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_toJson                thrpt  200  1699.049 ±  9.304  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson              thrpt  200   894.285 ±  4.104  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson_minified     thrpt  200  1198.403 ±  5.119  ops/s
-SpeedTest.moshi_kotlin_codegen_string_toJson                thrpt  200  1484.823 ±  3.913  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson           thrpt  200   891.004 ±  3.154  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt  200  1134.176 ±  3.934  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_toJson             thrpt  200  1335.505 ± 18.700  ops/s
-SpeedTest.moshi_kotlin_reflective_string_fromJson           thrpt  200   784.143 ±  5.367  ops/s
-SpeedTest.moshi_kotlin_reflective_string_toJson             thrpt  200  1206.002 ±  5.596  ops/s
+Write (string)
+SpeedTest.moshi_autovalue_string_toJson	thrpt	25	1477.759	±	12.712	ops/s
+SpeedTest.moshi_kotlin_codegen_string_toJson	thrpt	25	1473.877	±	14.48	ops/s
+SpeedTest.moshi_reflective_string_toJson	thrpt	25	1420.034	±	17.002	ops/s
+SpeedTest.kserializer_string_toJson	thrpt	25	1340.387	±	8.966	ops/s
+SpeedTest.gson_autovalue_string_toJson	thrpt	25	1212.849	±	17.831	ops/s
+SpeedTest.moshi_kotlin_reflective_string_toJson	thrpt	25	1186.398	±	21.733	ops/s
+SpeedTest.gson_reflective_string_toJson	thrpt	25	1012.079	±	9.862	ops/s
 ```
 
-Grouped by read/write and ordered by raw throughput:
+Grouped by library (interesting to see how reflection vs custom adapters affects perf within a library)
 
 ```
-Benchmark                                                    Mode  Cnt     Score    Error  Units
+GSON
+SpeedTest.gson_autovalue_string_fromJson_minified	thrpt	25	1422.573	±	17.722	ops/s
+SpeedTest.gson_reflective_string_fromJson	thrpt	25	1388.944	±	24.591	ops/s
+SpeedTest.gson_autovalue_buffer_fromJson_minified	thrpt	25	1336.091	±	16.25	ops/s
+SpeedTest.gson_autovalue_string_fromJson	thrpt	25	1295.682	±	24.112	ops/s
+SpeedTest.gson_autovalue_buffer_fromJson	thrpt	25	1222.809	±	6.776	ops/s
+SpeedTest.gson_autovalue_string_toJson	thrpt	25	1212.849	±	17.831	ops/s
+SpeedTest.gson_reflective_string_toJson	thrpt	25	1012.079	±	9.862	ops/s
+SpeedTest.gson_autovalue_buffer_toJson	thrpt	25	642.586	±	19.84	ops/s
 
-// Read (buffered)
-SpeedTest.gson_autovalue_buffer_fromJson_minified           thrpt  200  1500.076 ±  3.238  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson_minified          thrpt  200  1374.263 ±  4.125  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt  200  1345.220 ±  3.571  ops/s
-SpeedTest.gson_autovalue_buffer_fromJson                    thrpt  200  1305.687 ±  4.756  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt  200  1134.176 ±  3.934  ops/s
-SpeedTest.moshi_autovalue_buffer_fromJson                   thrpt  200  1019.747 ±  4.865  ops/s
-SpeedTest.moshi_kotlin_codegen_buffer_fromJson              thrpt  200  1008.205 ±  5.708  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_fromJson           thrpt  200   891.004 ±  3.154  ops/s
+Kotlinx Serialization
+SpeedTest.kserializer_string_fromJson_minified	thrpt	25	1639.444	±	14.787	ops/s
+SpeedTest.kserializer_string_fromJson	thrpt	25	1413.365	±	13.823	ops/s
+SpeedTest.kserializer_string_toJson	thrpt	25	1340.387	±	8.966	ops/s
 
-// Read (string)
-SpeedTest.gson_autovalue_string_fromJson_minified           thrpt  200  1610.007 ± 23.511  ops/s
-SpeedTest.gson_autovalue_string_fromJson                    thrpt  200  1501.642 ± 16.501  ops/s
-SpeedTest.gson_reflective_string_fromJson                   thrpt  200  1429.620 ±  8.491  ops/s
-SpeedTest.moshi_autovalue_string_fromJson_minified          thrpt  200  1187.466 ±  8.148  ops/s
-SpeedTest.kserializer_string_fromJson_minified              thrpt  200  1116.711 ± 68.464  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson_minified     thrpt  200  1198.403 ±  5.119  ops/s
-SpeedTest.kserializer_string_fromJson                       thrpt  200   933.622 ± 58.509  ops/s
-SpeedTest.moshi_kotlin_codegen_string_fromJson              thrpt  200   894.285 ±  4.104  ops/s
-SpeedTest.moshi_autovalue_string_fromJson                   thrpt  200   884.915 ±  8.067  ops/s
-SpeedTest.moshi_reflective_string_fromJson                  thrpt  200   853.909 ±  4.197  ops/s
-SpeedTest.moshi_kotlin_reflective_string_fromJson           thrpt  200   784.143 ±  5.367  ops/s
+Moshi
+SpeedTest.moshi_autovalue_buffer_toJson	thrpt	25	1577.05	±	77.249	ops/s
+SpeedTest.moshi_autovalue_string_toJson	thrpt	25	1477.759	±	12.712	ops/s
+SpeedTest.moshi_reflective_string_toJson	thrpt	25	1420.034	±	17.002	ops/s
+SpeedTest.moshi_autovalue_string_fromJson_minified	thrpt	25	1199.122	±	9.959	ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson	thrpt	25	974.813	±	12.968	ops/s
+SpeedTest.moshi_autovalue_buffer_fromJson_minified	thrpt	25	959.581	±	13.067	ops/s
+SpeedTest.moshi_autovalue_string_fromJson	thrpt	25	888.303	±	6.405	ops/s
+SpeedTest.moshi_reflective_string_fromJson	thrpt	25	791.379	±	11.537	ops/s
 
-// Write (buffered)
-SpeedTest.moshi_kotlin_codegen_buffer_toJson                thrpt  200  1699.049 ±  9.304  ops/s
-SpeedTest.moshi_autovalue_buffer_toJson                     thrpt  200  1659.574 ± 15.520  ops/s
-SpeedTest.moshi_kotlin_reflective_buffer_toJson             thrpt  200  1335.505 ± 18.700  ops/s
-SpeedTest.gson_autovalue_buffer_toJson                      thrpt  200   616.999 ±  1.365  ops/s
-
-// Write (string)
-SpeedTest.moshi_autovalue_string_toJson                     thrpt  200  1486.164 ±  7.188  ops/s
-SpeedTest.moshi_kotlin_codegen_string_toJson                thrpt  200  1484.823 ±  3.913  ops/s
-SpeedTest.moshi_reflective_string_toJson                    thrpt  200  1383.914 ±  9.629  ops/s
-SpeedTest.gson_autovalue_string_toJson                      thrpt  200  1221.374 ±  2.972  ops/s
-SpeedTest.moshi_kotlin_reflective_string_toJson             thrpt  200  1206.002 ±  5.596  ops/s
-SpeedTest.kserializer_string_toJson                         thrpt  200  1197.405 ± 13.311  ops/s
-SpeedTest.gson_reflective_string_toJson                     thrpt  200   977.967 ±  4.039  ops/s
-
-// Kryo alternative
-SpeedTest.kryo_fromBytes                                    thrpt  200  1337.743 ±  3.532  ops/s
-SpeedTest.kryo_toBytes                                      thrpt  200   951.468 ±  1.999  ops/s
+Moshi Kotlin
+SpeedTest.moshi_kotlin_codegen_buffer_toJson	thrpt	25	1572.972	±	95.974	ops/s
+SpeedTest.moshi_kotlin_codegen_string_toJson	thrpt	25	1473.877	±	14.48	ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified	thrpt	25	1375.027	±	35.05	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_toJson	thrpt	25	1372.856	±	22.928	ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson_minified	thrpt	25	1205.473	±	7.955	ops/s
+SpeedTest.moshi_kotlin_reflective_string_toJson	thrpt	25	1186.398	±	21.733	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified	thrpt	25	1128.853	±	9.983	ops/s
+SpeedTest.moshi_kotlin_codegen_buffer_fromJson	thrpt	25	984.343	±	14.441	ops/s
+SpeedTest.moshi_kotlin_codegen_string_fromJson	thrpt	25	872.131	±	5.331	ops/s
+SpeedTest.moshi_kotlin_reflective_buffer_fromJson	thrpt	25	838.602	±	7.488	ops/s
+SpeedTest.moshi_kotlin_reflective_string_fromJson	thrpt	25	741.541	±	24.851	ops/s
 ```
 
 To run:
 
 `./gradlew jmh`
+
+You can use `DataParser.kt` to parse the raw results (starting with the first benchmark line after the headers).
