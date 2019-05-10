@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.3.21'
-    ext.serialization_version = '0.10.0'
+    ext.kotlin_version = '1.3.31'
+    ext.serialization_version = '0.11.0'
     ext.jmh_version = '1.21'
     repositories {
         jcenter()
@@ -45,26 +45,25 @@ jmh {
 
 dependencies {
 
-    kapt 'com.google.auto.value:auto-value-annotations:1.6.3'
-    kapt 'com.google.auto.value:auto-value:1.6.3'
+    kapt 'com.google.auto.value:auto-value-annotations:1.6.5'
+    kapt 'com.google.auto.value:auto-value:1.6.5'
     kapt 'com.ryanharter.auto.value:auto-value-gson:1.0.0'
     kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.7.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
 
-    compileOnly 'com.google.auto.value:auto-value-annotations:1.6'
+    compileOnly 'com.google.auto.value:auto-value-annotations:1.6.5'
     compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
 
-    jmh 'com.google.guava:guava:27.0.1-jre'
+    jmh 'com.google.guava:guava:27.1-jre'
     jmh 'com.squareup.okio:okio:2.2.2'
     compile 'com.ryanharter.auto.value:auto-value-gson-runtime:1.0.0'
-    compile 'com.google.auto.value:auto-value-annotations:1.6'
+    compile 'com.google.auto.value:auto-value-annotations:1.6.5'
     compile "org.openjdk.jmh:jmh-core:$jmh_version"
-    compile 'com.google.guava:guava:27.0.1-jre'
-    compile 'com.squareup.moshi:moshi-kotlin:1.7.0'
+    compile 'com.google.guava:guava:27.1-jre'
+    compile 'com.squareup.moshi:moshi-kotlin:1.8.0'
     compile 'com.squareup.okio:okio:2.2.2'
-    compile 'com.squareup.moshi:moshi:1.7.0'
+    compile 'com.squareup.moshi:moshi:1.8.0'
     compile 'com.google.code.gson:gson:2.8.5'
-    compile 'com.esotericsoftware:kryo:4.0.0'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
