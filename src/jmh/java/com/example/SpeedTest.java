@@ -1,11 +1,5 @@
 package com.example;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Kryo.DefaultInstantiatorStrategy;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.example.adapter.GeneratedJsonAdapterFactory;
 import com.example.adapter.GeneratedTypeAdapterFactory;
 import com.example.kotlinx_serialization.Response;
@@ -20,7 +14,6 @@ import com.google.gson.TypeAdapter;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -32,7 +25,6 @@ import kotlinx.serialization.KSerializer;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
-import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
@@ -322,41 +314,6 @@ public class SpeedTest {
         public TypeAdapter<ResponseAV> adapter;
     }
 
-    @State(Scope.Benchmark)
-    public static class KryoScope {
-
-        @Setup
-        public void setupTrial() throws Exception {
-            kryo = new Kryo();
-            kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
-            DefaultInstantiatorStrategy instantiatorStrategy = new DefaultInstantiatorStrategy();
-            instantiatorStrategy.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-            kryo.setInstantiatorStrategy(instantiatorStrategy);
-
-            URL url = Resources.getResource("largesample.json");
-            String json = Resources.toString(url, Charsets.UTF_8);
-            response = new GsonBuilder()
-                    .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
-                    .create()
-                    .fromJson(json, ResponseAV.class);
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            Output output = new Output(stream);
-            responseClazz = getAutoValueClass(ResponseAV.class);
-            serializer = kryo.getSerializer(responseClazz);
-            serializer.write(kryo, output, response);
-            output.flush();
-            bytes = stream.toByteArray();
-        }
-
-        public Kryo kryo;
-        public byte[] bytes;
-        public ResponseAV response;
-        public Class<ResponseAV> responseClazz;
-        // Using the serializer directly doesn't appear to handle object begin/end
-        public Serializer<ResponseAV> serializer;
-    }
-
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
@@ -436,17 +393,6 @@ public class SpeedTest {
     public Writer gson_autovalue_buffer_toJson(AVGsonBuffer param) throws IOException {
         param.adapter.toJson(param.sink, param.response);
         return param.sink;
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public byte[] kryo_toBytes(KryoScope param) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Output output = new Output(stream);
-        param.kryo.writeObject(output, param.response);
-        output.flush();
-        return stream.toByteArray();
     }
 
     @Benchmark
@@ -580,13 +526,6 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV gson_autovalue_buffer_fromJson_minified(AVGsonBuffer param) throws IOException {
         return param.adapter.fromJson(param.minifiedSource);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV kryo_fromBytes(KryoScope param) throws IOException {
-        return param.kryo.readObject(new Input(param.bytes), param.responseClazz);
     }
 
     private static <T> Class<T> getAutoValueClass(Class<T> clazz) throws ClassNotFoundException {
