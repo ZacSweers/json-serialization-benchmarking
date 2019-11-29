@@ -1,7 +1,7 @@
 buildscript {
-    ext.kotlin_version = '1.3.31'
-    ext.serialization_version = '0.11.0'
-    ext.jmh_version = '1.21'
+    ext.kotlin_version = '1.3.60'
+    ext.serialization_version = '0.14.0'
+    ext.jmh_version = '1.22'
     repositories {
         jcenter()
         maven {
@@ -10,11 +10,11 @@ buildscript {
         maven { url "https://kotlin.bintray.com/kotlinx" }
     }
     dependencies {
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.8"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.0"
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.21"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
     }
 }
 
@@ -22,8 +22,8 @@ group 'com.example'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.kapt'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'idea'
 apply plugin: "net.ltgt.apt-idea"
@@ -44,26 +44,25 @@ jmh {
 }
 
 dependencies {
+    kapt 'com.google.auto.value:auto-value-annotations:1.7'
+    kapt 'com.google.auto.value:auto-value:1.7'
+    kapt 'com.ryanharter.auto.value:auto-value-gson:1.1.1'
+    kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.7'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
 
-    kapt 'com.google.auto.value:auto-value-annotations:1.6.5'
-    kapt 'com.google.auto.value:auto-value:1.6.5'
-    kapt 'com.ryanharter.auto.value:auto-value-gson:1.0.0'
-    kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
-
-    compileOnly 'com.google.auto.value:auto-value-annotations:1.6.5'
-    compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.5'
+    compileOnly 'com.google.auto.value:auto-value-annotations:1.7'
+    compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.7'
 
     jmh 'com.google.guava:guava:27.1-jre'
     jmh 'com.squareup.okio:okio:2.2.2'
-    compile 'com.ryanharter.auto.value:auto-value-gson-runtime:1.0.0'
-    compile 'com.google.auto.value:auto-value-annotations:1.6.5'
+    compile 'com.ryanharter.auto.value:auto-value-gson-runtime:1.1.1'
+    compile 'com.google.auto.value:auto-value-annotations:1.7'
     compile "org.openjdk.jmh:jmh-core:$jmh_version"
     compile 'com.google.guava:guava:27.1-jre'
-    compile 'com.squareup.moshi:moshi-kotlin:1.8.0'
-    compile 'com.squareup.okio:okio:2.2.2'
-    compile 'com.squareup.moshi:moshi:1.8.0'
-    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.squareup.moshi:moshi-kotlin:1.9.2'
+    compile 'com.squareup.okio:okio:2.4.1'
+    compile 'com.squareup.moshi:moshi:1.9.2'
+    compile 'com.google.code.gson:gson:2.8.6'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
