@@ -11,7 +11,7 @@ import com.squareup.moshi.Moshi;
 import java.util.List;
 
 @AutoValue
-public abstract class ResponseAV {
+public abstract class ResponseAV extends AbstractResponseAV {
 
     public abstract List<UserAV> users();
 

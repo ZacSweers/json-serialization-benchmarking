@@ -39,8 +39,17 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
+// We setup jmh such that you must provide the `-Pjmh` to specify which tests
+// to run. If it has no value then all tests are run, but you can specify
+// tests by providing a value. (e.g., if you want to run "PolymorphicTest",
+// you can run `./gradlew jmh -Pjmh=PolymorphicTest`)
 jmh {
     jmhVersion = jmh_version
+
+    if (project.hasProperty("jmh")) {
+        include = [".*" + project.jmh + ".*"]
+        println("JMH: " + include)
+    }
 }
 
 dependencies {
@@ -51,7 +60,7 @@ dependencies {
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
 
     compileOnly 'com.google.auto.value:auto-value-annotations:1.7'
-    compileOnly 'com.ryanharter.auto.value:auto-value-moshi:0.4.7'
+    compileOnly 'com.ryanharter.auto.value:auto-value-moshi-annotations:0.4.7'
 
     jmh 'com.google.guava:guava:27.1-jre'
     jmh 'com.squareup.okio:okio:2.2.2'
@@ -62,6 +71,7 @@ dependencies {
     compile 'com.squareup.moshi:moshi-kotlin:1.9.2'
     compile 'com.squareup.okio:okio:2.4.1'
     compile 'com.squareup.moshi:moshi:1.9.2'
+    compile 'com.squareup.moshi:moshi-adapters:1.9.2'
     compile 'com.google.code.gson:gson:2.8.6'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'

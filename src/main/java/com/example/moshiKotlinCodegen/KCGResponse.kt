@@ -9,4 +9,4 @@ data class KCGResponse(
     val status: String,
     @Json(name = "is_real_json")
     val isRealJson: Boolean
-)
+) : KCGAbstractResponse()
