@@ -18,6 +18,7 @@ package com.example.gson;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -213,10 +214,19 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         = new LinkedHashMap<String, TypeAdapter<?>>();
     final Map<Class<?>, TypeAdapter<?>> subtypeToDelegate
         = new LinkedHashMap<Class<?>, TypeAdapter<?>>();
-    for (Map.Entry<String, Class<?>> entry : labelToSubtype.entrySet()) {
+    for (Map.Entry<String, Class<?>> entry : new LinkedHashSet<>(labelToSubtype.entrySet())) {
       TypeAdapter<?> delegate = gson.getDelegateAdapter(this, TypeToken.get(entry.getValue()));
       labelToDelegate.put(entry.getKey(), delegate);
       subtypeToDelegate.put(entry.getValue(), delegate);
+      //region BenchmarkFork - check for AutoValue subtypes
+      try {
+        Class<?> autoValueClass = getAutoValueClass(entry.getValue());
+        subtypeToDelegate.put(autoValueClass, delegate);
+        labelToSubtype.put(entry.getKey(), autoValueClass);
+        subtypeToLabel.put(autoValueClass, entry.getKey());
+      } catch (ClassNotFoundException ignored) {
+      }
+      //endregion
     }
 
     return new TypeAdapter<R>() {
@@ -249,8 +259,42 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         @SuppressWarnings("unchecked") // registration requires that subtype extends T
         TypeAdapter<R> delegate = (TypeAdapter<R>) subtypeToDelegate.get(srcType);
         if (delegate == null) {
-          throw new JsonParseException("cannot serialize " + srcType.getName()
-              + "; did you forget to register a subtype?");
+          //region BenchmarkFork
+          // Try asking the original Gson instance in case another adapter handles it. This is so
+          // classes that are adapted by something else with a separate adapter/factory still work,
+          // such as with AutoValue.
+          // This is modified from the original Gson code.
+          try {
+            //noinspection unchecked
+            delegate = (TypeAdapter<R>) gson.getAdapter(srcType);
+            // Cache the delegate for this runtime type.
+            subtypeToDelegate.put(srcType, delegate);
+            // Find the original subtype for this and update the label
+            for (Map.Entry<Class<?>, TypeAdapter<?>> entry : subtypeToDelegate.entrySet()) {
+              // TODO this doesn't work without adapter equality
+              if (entry.getValue().equals(delegate)) {
+                String actualLabel = subtypeToLabel.get(entry.getKey());
+                subtypeToLabel.put(srcType, actualLabel);
+                label = actualLabel;
+                break;
+              }
+            }
+            if (label == null) {
+              throw new RuntimeException("No label found!");
+            }
+          } catch (IllegalArgumentException ignore) {
+            // Try checking the type here just in case
+            // Check isAssignable
+            if (!baseType.isAssignableFrom(srcType)) {
+              throw new JsonParseException("cannot serialize " + srcType.getName()
+                  + " because it is not a subtype of " + baseType.getName());
+            }
+          }
+          if (delegate == null) {
+            throw new JsonParseException("cannot serialize " + srcType.getName()
+                + "; did you forget to register a subtype?");
+          }
+          //endregion
         }
         JsonObject jsonObject = delegate.toJsonTree(value).getAsJsonObject();
 
@@ -273,5 +317,12 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         Streams.write(clone, out);
       }
     }.nullSafe();
+  }
+
+  private static <T> Class<T> getAutoValueClass(Class<T> clazz) throws ClassNotFoundException {
+    String pkgName = clazz.getPackage().getName();
+    String className = pkgName + ".AutoValue_" + clazz.getSimpleName();
+    //noinspection unchecked
+    return (Class<T>) Class.forName(className);
   }
 }
