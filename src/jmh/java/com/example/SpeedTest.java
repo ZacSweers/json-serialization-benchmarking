@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -40,18 +41,18 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class KotlinxSerialization {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup()
         public void doSetup() throws Exception {
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             kSerializer = Response.underlyingSerializer();
             response = Response.parse(kSerializer, json);
         }
 
         public String json;
-        public String minifiedJson;
         public Response response;
         public KSerializer<Response> kSerializer;
     }
@@ -59,10 +60,13 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveMoshi {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder().build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
             adapter = moshi.adapter(Response.class);
             response = adapter.fromJson(json);
@@ -77,10 +81,13 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveGson {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             gson = new GsonBuilder().create();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
             adapter = gson.getAdapter(Response.class);
             response = adapter.fromJson(json);
@@ -95,22 +102,22 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVMoshi {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .add(GeneratedJsonAdapterFactory.create())
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(ResponseAV.class);
             response = adapter.fromJson(json);
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public ResponseAV response;
         public JsonAdapter<ResponseAV> adapter;
     }
@@ -118,22 +125,22 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveMoshiKotlin {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .add(new KotlinJsonAdapterFactory())
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(KRResponse.class);
             response = adapter.fromJson(json);
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public KRResponse response;
         public JsonAdapter<KRResponse> adapter;
     }
@@ -141,21 +148,21 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class CodegenMoshiKotlin {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(KCGResponse.class);
             response = adapter.fromJson(json);
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public KCGResponse response;
         public JsonAdapter<KCGResponse> adapter;
     }
@@ -163,15 +170,16 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVMoshiBuffer {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .add(GeneratedJsonAdapterFactory.create())
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(ResponseAV.class);
             response = adapter.fromJson(json);
         }
@@ -179,15 +187,12 @@ public class SpeedTest {
         @Setup(Level.Invocation)
         public void setupIteration() {
             bufferedSource = new Buffer().write(json.getBytes());
-            minifiedBufferedSource = new Buffer().write(json.getBytes());
             bufferedSink = new Buffer();
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public BufferedSource bufferedSource;
-        public BufferedSource minifiedBufferedSource;
         public BufferedSink bufferedSink;
         public ResponseAV response;
         public JsonAdapter<ResponseAV> adapter;
@@ -196,15 +201,16 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class ReflectiveMoshiKotlinBuffer {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .add(new KotlinJsonAdapterFactory())
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(KRResponse.class);
             response = adapter.fromJson(json);
         }
@@ -212,15 +218,12 @@ public class SpeedTest {
         @Setup(Level.Invocation)
         public void setupIteration() {
             bufferedSource = new Buffer().write(json.getBytes());
-            minifiedBufferedSource = new Buffer().write(minifiedJson.getBytes());
             bufferedSink = new Buffer();
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public BufferedSource bufferedSource;
-        public BufferedSource minifiedBufferedSource;
         public BufferedSink bufferedSink;
         public KRResponse response;
         public JsonAdapter<KRResponse> adapter;
@@ -229,14 +232,15 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class CodegenMoshiKotlinBuffer {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             moshi = new Moshi.Builder()
                     .build();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = moshi.adapter(KCGResponse.class);
             response = adapter.fromJson(json);
         }
@@ -244,15 +248,12 @@ public class SpeedTest {
         @Setup(Level.Invocation)
         public void setupIteration() {
             bufferedSource = new Buffer().write(json.getBytes());
-            minifiedBufferedSource = new Buffer().write(minifiedJson.getBytes());
             bufferedSink = new Buffer();
         }
 
         public Moshi moshi;
         public String json;
-        public String minifiedJson;
         public BufferedSource bufferedSource;
-        public BufferedSource minifiedBufferedSource;
         public BufferedSink bufferedSink;
         public KCGResponse response;
         public JsonAdapter<KCGResponse> adapter;
@@ -261,22 +262,22 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVGson {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
                     .create();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = gson.getAdapter(ResponseAV.class);
             response = adapter.fromJson(json);
         }
 
         public Gson gson;
         public String json;
-        public String minifiedJson;
         public ResponseAV response;
         public TypeAdapter<ResponseAV> adapter;
     }
@@ -284,15 +285,16 @@ public class SpeedTest {
     @State(Scope.Benchmark)
     public static class AVGsonBuffer {
 
+        @Param({"true", "false"})
+        public boolean minified;
+
         @Setup
         public void setupTrial() throws Exception {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
                     .create();
-            URL url = Resources.getResource("largesample.json");
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            URL url2 = Resources.getResource("largesample_minified.json");
-            minifiedJson = Resources.toString(url2, Charsets.UTF_8);
             adapter = gson.getAdapter(ResponseAV.class);
             response = adapter.fromJson(json);
         }
@@ -301,15 +303,12 @@ public class SpeedTest {
         public void setupIteration() {
             source = new InputStreamReader(new Buffer().write(json.getBytes()).inputStream(), Charsets.UTF_8);
             sink = new OutputStreamWriter(new Buffer().outputStream(), Charsets.UTF_8);
-            minifiedSource = new InputStreamReader(new Buffer().write(minifiedJson.getBytes()).inputStream(), Charsets.UTF_8);
         }
 
         public Gson gson;
         public String json;
-        public String minifiedJson;
         public Reader source;
         public Writer sink;
-        public Reader minifiedSource;
         public ResponseAV response;
         public TypeAdapter<ResponseAV> adapter;
     }
@@ -405,13 +404,6 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public Response kserializer_string_fromJson_minified(KotlinxSerialization param) throws IOException {
-        return Response.parse(param.kSerializer, param.minifiedJson);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
     public Response moshi_reflective_string_fromJson(ReflectiveMoshi param) throws Exception {
         return param.adapter.fromJson(param.json);
     }
@@ -421,13 +413,6 @@ public class SpeedTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV moshi_autovalue_string_fromJson(AVMoshi param) throws Exception {
         return param.adapter.fromJson(param.json);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV moshi_autovalue_string_fromJson_minified(AVMoshi param) throws Exception {
-        return param.adapter.fromJson(param.minifiedJson);
     }
 
     @Benchmark
@@ -447,22 +432,8 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public KCGResponse moshi_kotlin_codegen_string_fromJson_minified(CodegenMoshiKotlin param) throws Exception {
-        return param.adapter.fromJson(param.minifiedJson);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV moshi_autovalue_buffer_fromJson(AVMoshiBuffer param) throws IOException {
         return param.adapter.fromJson(param.bufferedSource);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV moshi_autovalue_buffer_fromJson_minified(AVMoshiBuffer param) throws IOException {
-        return param.adapter.fromJson(param.minifiedBufferedSource);
     }
 
     @Benchmark
@@ -475,22 +446,8 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public KRResponse moshi_kotlin_reflective_buffer_fromJson_minified(ReflectiveMoshiKotlinBuffer param) throws IOException {
-        return param.adapter.fromJson(param.minifiedBufferedSource);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
     public KCGResponse moshi_kotlin_codegen_buffer_fromJson(CodegenMoshiKotlinBuffer param) throws IOException {
         return param.adapter.fromJson(param.bufferedSource);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public KCGResponse moshi_kotlin_codegen_buffer_fromJson_minified(CodegenMoshiKotlinBuffer param) throws IOException {
-        return param.adapter.fromJson(param.minifiedBufferedSource);
     }
 
     @Benchmark
@@ -510,22 +467,8 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV gson_autovalue_string_fromJson_minified(AVGson param) throws IOException {
-        return param.adapter.fromJson(param.minifiedJson);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
     public ResponseAV gson_autovalue_buffer_fromJson(AVGsonBuffer param) throws IOException {
         return param.adapter.fromJson(param.source);
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public ResponseAV gson_autovalue_buffer_fromJson_minified(AVGsonBuffer param) throws IOException {
-        return param.adapter.fromJson(param.minifiedSource);
     }
 
     private static <T> Class<T> getAutoValueClass(Class<T> clazz) throws ClassNotFoundException {
