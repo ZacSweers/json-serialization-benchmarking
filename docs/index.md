@@ -21,7 +21,7 @@ Speed is not everything though! Different libraries come with different trade of
 
 To run:
 
-`./gradlew jmh`
+`./gradlew jmh -Pjmh=<FileName to Run>`
 
 You can use respective `*DataParser.kt` files to parse the raw results (starting with the first
 benchmark line after the headers).
