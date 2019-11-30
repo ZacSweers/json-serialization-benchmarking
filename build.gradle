@@ -7,6 +7,7 @@ buildscript {
     ext.serialization_version = '0.14.0'
     ext.jmh_version = '1.22'
     repositories {
+        google()
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
@@ -15,17 +16,21 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath "com.android.tools.build:gradle:3.5.2"
         classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.0"
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.21"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+        classpath "androidx.benchmark:benchmark-gradle-plugin:1.0.0"
     }
 }
 
 subprojects {
     repositories {
+        google()
         mavenCentral()
+        jcenter()
         maven { url "https://kotlin.bintray.com/kotlinx" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
