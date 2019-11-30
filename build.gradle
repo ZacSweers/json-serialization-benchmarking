@@ -1,13 +1,18 @@
+ext.kotlin_version = '1.3.61'
+ext.serialization_version = '0.14.0'
+ext.jmh_version = '1.22'
+
 buildscript {
-    ext.kotlin_version = '1.3.60'
+    ext.kotlin_version = '1.3.61'
     ext.serialization_version = '0.14.0'
     ext.jmh_version = '1.22'
     repositories {
-        jcenter()
+        mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
         maven { url "https://kotlin.bintray.com/kotlinx" }
+        jcenter()
     }
     dependencies {
         classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.0"
@@ -18,63 +23,10 @@ buildscript {
     }
 }
 
-group 'com.example'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: 'org.jetbrains.kotlin.kapt'
-apply plugin: 'kotlinx-serialization'
-apply plugin: 'idea'
-apply plugin: "net.ltgt.apt-idea"
-apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "com.github.johnrengelman.shadow"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-    maven { url "https://kotlin.bintray.com/kotlinx" }
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-}
-
-// We setup jmh such that you must provide the `-Pjmh` to specify which tests
-// to run. If it has no value then all tests are run, but you can specify
-// tests by providing a value. (e.g., if you want to run "PolymorphicTest",
-// you can run `./gradlew jmh -Pjmh=PolymorphicTest`)
-jmh {
-    jmhVersion = jmh_version
-
-    if (project.hasProperty("jmh")) {
-        include = [".*" + project.jmh + ".*"]
-        println("JMH: " + include)
+subprojects {
+    repositories {
+        mavenCentral()
+        maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
-}
-
-dependencies {
-    kapt 'com.google.auto.value:auto-value-annotations:1.7'
-    kapt 'com.google.auto.value:auto-value:1.7'
-    kapt 'com.ryanharter.auto.value:auto-value-gson:1.1.1'
-    kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.7'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
-
-    compileOnly 'com.google.auto.value:auto-value-annotations:1.7'
-    compileOnly 'com.ryanharter.auto.value:auto-value-moshi-annotations:0.4.7'
-
-    jmh 'com.google.guava:guava:27.1-jre'
-    jmh 'com.squareup.okio:okio:2.2.2'
-    compile 'com.ryanharter.auto.value:auto-value-gson-runtime:1.1.1'
-    compile 'com.google.auto.value:auto-value-annotations:1.7'
-    compile "org.openjdk.jmh:jmh-core:$jmh_version"
-    compile 'com.google.guava:guava:27.1-jre'
-    compile 'com.squareup.moshi:moshi-kotlin:1.9.2'
-    compile 'com.squareup.okio:okio:2.4.1'
-    compile 'com.squareup.moshi:moshi:1.9.2'
-    compile 'com.squareup.moshi:moshi-adapters:1.9.2'
-    compile 'com.google.code.gson:gson:2.8.6'
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
 }
