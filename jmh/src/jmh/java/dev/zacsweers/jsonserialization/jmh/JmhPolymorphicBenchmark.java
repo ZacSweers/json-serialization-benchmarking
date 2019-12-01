@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 @SuppressWarnings("ALL")
-public class PolymorphicTest {
+public class JmhPolymorphicBenchmark {
 
   @State(Scope.Benchmark)
   public static class CodegenMoshiKotlinBuffer {

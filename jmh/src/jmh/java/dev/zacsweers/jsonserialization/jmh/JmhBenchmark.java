@@ -37,7 +37,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 @SuppressWarnings("ALL")
-public class SpeedTest {
+public class JmhBenchmark {
 
     @State(Scope.Benchmark)
     public static class KotlinxSerialization {

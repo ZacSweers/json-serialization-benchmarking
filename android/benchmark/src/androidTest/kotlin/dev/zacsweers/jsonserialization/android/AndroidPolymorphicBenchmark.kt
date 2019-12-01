@@ -34,7 +34,7 @@ import java.io.Writer
 @ImplicitReflectionSerializer
 @LargeTest
 @RunWith(Parameterized::class)
-class PolymorphicBenchmark(
+class AndroidPolymorphicBenchmark(
     minified: Boolean,
     typeKeyLocation: String
 ) {

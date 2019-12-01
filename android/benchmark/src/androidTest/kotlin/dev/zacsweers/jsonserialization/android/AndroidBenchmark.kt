@@ -51,7 +51,7 @@ import java.io.Writer
 @ImplicitReflectionSerializer
 @LargeTest
 @RunWith(Parameterized::class)
-class JsonSerializationBenchmark(
+class AndroidBenchmark(
     minified: Boolean
 ) {
 
