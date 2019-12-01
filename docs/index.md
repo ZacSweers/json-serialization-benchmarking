@@ -1,7 +1,3 @@
-Misc benchmarks for JSON serialization
-
-## Notes
-
 - These benchmarks compare...
   - Gson, Moshi, kotlinx serialization
   - Reflective vs streaming APIs (via code gen)
