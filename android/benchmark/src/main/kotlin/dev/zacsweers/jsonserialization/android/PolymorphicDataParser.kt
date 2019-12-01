@@ -28,6 +28,10 @@ benchmark:   165,742,933 ns PolymorphicBenchmark.gson_toJson[minified=true,typeK
             units = units
         )
       }
+      .filterNot {
+        // Minified doesn't matter in toJson, so filter out half of them
+        "_toJson" in it.benchmark && "minified=false" in it.benchmark
+      }
       .toList()
 
   PolymorphicResultType.values().forEach { printResults(it, results) }
@@ -71,9 +75,7 @@ private enum class PolymorphicResultType(val description: String, val groupings:
             "_fromJson" in it
           },
           Grouping("Write") {
-            "_toJson" in it &&
-                // Minified doesn't matter in toJson, so filter out half of them
-                "minified=false" !in it
+            "_toJson" in it
           }
       )
   )
