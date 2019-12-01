@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package dev.zacsweers.jsonserialization.android
 
-import android.content.Context
 import androidx.benchmark.BenchmarkRule
 import androidx.benchmark.measureRepeated
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.google.common.base.Charsets
+import com.google.common.io.Resources
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
@@ -40,11 +37,11 @@ import kotlinx.serialization.KSerializer
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
-import okio.buffer
-import okio.source
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.io.Reader
@@ -52,248 +49,183 @@ import java.io.Writer
 
 @ImplicitReflectionSerializer
 @LargeTest
-@RunWith(AndroidJUnit4::class)
-class JsonSerializationBenchmark {
+@RunWith(Parameterized::class)
+class JsonSerializationBenchmark(
+    minified: Boolean
+) {
 
-  class KotlinxSerialization {
+  companion object {
+    @JvmStatic
+    @Parameters(name = "minified={0}")
+    fun data(): List<Array<*>> {
+      return listOf(
+          arrayOf(true, false) // minified
+      )
+    }
+  }
 
-    val json: String
-    val minifiedJson: String
+  class KotlinxSerialization(json: String) {
+
     val response: Response
-    val kSerializer: KSerializer<Response>
+    val kSerializer: KSerializer<Response> = Response.underlyingSerializer()
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
-      kSerializer = Response.underlyingSerializer()
       response = Response.parse(kSerializer, json)
     }
   }
 
-  class ReflectiveMoshi {
+  class ReflectiveMoshi(json: String) {
 
     private val moshi: Moshi = Moshi.Builder().build()
-    val json: String
     val response: Response
     val adapter: JsonAdapter<Response>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
       adapter = moshi.adapter(Response::class.java)
       response = adapter.fromJson(json)!!
     }
   }
 
-  class ReflectiveGson {
+  class ReflectiveGson(json: String) {
 
     private val gson: Gson = GsonBuilder().create()
-    val json: String
     val response: Response
     val adapter: TypeAdapter<Response>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
       adapter = gson.getAdapter(Response::class.java)
       response = adapter.fromJson(json)
     }
   }
 
-  class AVMoshi {
+  class AVMoshi(json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(GeneratedJsonAdapterFactory.create())
         .build()
-    val json: String
-    val minifiedJson: String
     val response: ResponseAV
     val adapter: JsonAdapter<ResponseAV>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(ResponseAV::class.java)
       response = adapter.fromJson(json)!!
     }
   }
 
-  class ReflectiveMoshiKotlin {
+  class ReflectiveMoshiKotlin(json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
-    val json: String
-    private val minifiedJson: String
     val response: KRResponse
     val adapter: JsonAdapter<KRResponse>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(KRResponse::class.java)
       response = adapter.fromJson(json)!!
     }
   }
 
-  class CodegenMoshiKotlin {
+  class CodegenMoshiKotlin(json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .build()
-    val json: String
-    val minifiedJson: String
     val response: KCGResponse
     val adapter: JsonAdapter<KCGResponse>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(KCGResponse::class.java)
       response = adapter.fromJson(json)!!
     }
   }
 
-  class AVMoshiBuffer {
+  class AVMoshiBuffer(private val json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(GeneratedJsonAdapterFactory.create())
         .build()
-    private val json: String
-    private val minifiedJson: String
     lateinit var bufferedSource: BufferedSource
-    lateinit var minifiedBufferedSource: BufferedSource
     lateinit var bufferedSink: BufferedSink
     val response: ResponseAV
     val adapter: JsonAdapter<ResponseAV>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(ResponseAV::class.java)
       response = adapter.fromJson(json)!!
     }
 
     fun setupIteration() {
       bufferedSource = Buffer().write(json.toByteArray())
-      minifiedBufferedSource = Buffer().write(json.toByteArray())
       bufferedSink = Buffer()
     }
   }
 
-  class ReflectiveMoshiKotlinBuffer {
+  class ReflectiveMoshiKotlinBuffer(private val json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
-    private val json: String
-    private val minifiedJson: String
     lateinit var bufferedSource: BufferedSource
-    lateinit var minifiedBufferedSource: BufferedSource
     lateinit var bufferedSink: BufferedSink
     val response: KRResponse
     val adapter: JsonAdapter<KRResponse>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(KRResponse::class.java)
       response = adapter.fromJson(json)!!
     }
 
     fun setupIteration() {
       bufferedSource = Buffer().write(json.toByteArray())
-      minifiedBufferedSource = Buffer().write(minifiedJson.toByteArray())
       bufferedSink = Buffer()
     }
   }
 
-  class CodegenMoshiKotlinBuffer {
+  class CodegenMoshiKotlinBuffer(private val json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
         .build()
-    private val json: String
-    private val minifiedJson: String
     lateinit var bufferedSource: BufferedSource
-    lateinit var minifiedBufferedSource: BufferedSource
     lateinit var bufferedSink: BufferedSink
     val response: KCGResponse
     val adapter: JsonAdapter<KCGResponse>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = moshi.adapter(KCGResponse::class.java)
       response = adapter.fromJson(json)!!
     }
 
     fun setupIteration() {
       bufferedSource = Buffer().write(json.toByteArray())
-      minifiedBufferedSource = Buffer().write(minifiedJson.toByteArray())
       bufferedSink = Buffer()
     }
   }
 
-  class AVGson {
+  class AVGson(json: String) {
 
     private val gson: Gson = GsonBuilder()
         .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
         .create()
-    val json: String
-    val minifiedJson: String
     val response: ResponseAV
     val adapter: TypeAdapter<ResponseAV>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = gson.getAdapter(ResponseAV::class.java)
       response = adapter.fromJson(json)
     }
   }
 
-  class AVGsonBuffer {
+  class AVGsonBuffer(private val json: String) {
 
     private val gson: Gson = GsonBuilder()
         .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
         .create()
-    private val json: String
-    private val minifiedJson: String
     lateinit var source: Reader
     lateinit var sink: Writer
-    lateinit var minifiedSource: Reader
     val response: ResponseAV
     val adapter: TypeAdapter<ResponseAV>
 
     init {
-      val url = ApplicationProvider.getApplicationContext<Context>().assets.open("largesample.json")
-      json = url.source().buffer().readUtf8()
-      val url2 = ApplicationProvider.getApplicationContext<Context>().assets.open(
-          "largesample_minified.json")
-      minifiedJson = url2.source().buffer().readUtf8()
       adapter = gson.getAdapter(ResponseAV::class.java)
       response = adapter.fromJson(json)
     }
@@ -301,191 +233,153 @@ class JsonSerializationBenchmark {
     fun setupIteration() {
       source = InputStreamReader(Buffer().write(json.toByteArray()).inputStream(), Charsets.UTF_8)
       sink = OutputStreamWriter(Buffer().outputStream(), Charsets.UTF_8)
-      minifiedSource = InputStreamReader(Buffer().write(minifiedJson.toByteArray()).inputStream(),
-          Charsets.UTF_8)
     }
   }
 
   @get:Rule
   val benchmarkRule = BenchmarkRule()
+  @Suppress("UnstableApiUsage")
+  private val json = Resources.getResource(
+      "largesample" + (if (minified) "_minified" else "") + ".json")
+      .readText()
 
   @Test
   fun kserializer_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { KotlinxSerialization() }
+    val param = runWithTimingDisabled { KotlinxSerialization(json) }
     param.response.stringify(param.kSerializer)
   }
 
   @Test
   fun moshi_reflective_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshi() }
+    val param = runWithTimingDisabled { ReflectiveMoshi(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun moshi_autovalue_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshi() }
+    val param = runWithTimingDisabled { AVMoshi(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun moshi_kotlin_reflective_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshiKotlin() }
+    val param = runWithTimingDisabled { ReflectiveMoshiKotlin(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun moshi_kotlin_codegen_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlin() }
+    val param = runWithTimingDisabled { CodegenMoshiKotlin(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun moshi_autovalue_buffer_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshiBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled { AVMoshiBuffer(json).also { it.setupIteration() } }
     param.adapter.toJson(param.bufferedSink, param.response)
   }
 
   @Test
   fun moshi_kotlin_reflective_buffer_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshiKotlinBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled {
+      ReflectiveMoshiKotlinBuffer(json).also { it.setupIteration() }
+    }
     param.adapter.toJson(param.bufferedSink, param.response)
   }
 
   @Test
   fun moshi_kotlin_codegen_buffer_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlinBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled {
+      CodegenMoshiKotlinBuffer(json).also { it.setupIteration() }
+    }
     param.adapter.toJson(param.bufferedSink, param.response)
   }
 
   @Test
   fun gson_reflective_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveGson() }
+    val param = runWithTimingDisabled { ReflectiveGson(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun gson_autovalue_string_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGson() }
+    val param = runWithTimingDisabled { AVGson(json) }
     param.adapter.toJson(param.response)
   }
 
   @Test
   fun gson_autovalue_buffer_toJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGsonBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled { AVGsonBuffer(json).also { it.setupIteration() } }
     param.adapter.toJson(param.sink, param.response)
   }
 
   @Test
   fun kserializer_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { KotlinxSerialization() }
-    Response.parse(param.kSerializer, param.json)
-  }
-
-  @Test
-  fun kserializer_string_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { KotlinxSerialization() }
-    Response.parse(param.kSerializer, param.minifiedJson)
+    val param = runWithTimingDisabled { KotlinxSerialization(json) }
+    Response.parse(param.kSerializer, json)
   }
 
   @Test
   fun moshi_reflective_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshi() }
-    param.adapter.fromJson(param.json)
+    val param = runWithTimingDisabled { ReflectiveMoshi(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun moshi_autovalue_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshi() }
-    param.adapter.fromJson(param.json)
-  }
-
-  @Test
-  fun moshi_autovalue_string_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshi() }
-    param.adapter.fromJson(param.minifiedJson)
+    val param = runWithTimingDisabled { AVMoshi(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun moshi_kotlin_reflective_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshiKotlin() }
-    param.adapter.fromJson(param.json)
+    val param = runWithTimingDisabled { ReflectiveMoshiKotlin(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun moshi_kotlin_codegen_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlin() }
-    param.adapter.fromJson(param.json)
-  }
-
-  @Test
-  fun moshi_kotlin_codegen_string_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlin() }
-    param.adapter.fromJson(param.minifiedJson)
+    val param = runWithTimingDisabled { CodegenMoshiKotlin(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun moshi_autovalue_buffer_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshiBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled { AVMoshiBuffer(json).also { it.setupIteration() } }
     param.adapter.fromJson(param.bufferedSource)
-  }
-
-  @Test
-  fun moshi_autovalue_buffer_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVMoshiBuffer().also { it.setupIteration() } }
-    param.adapter.fromJson(param.minifiedBufferedSource)
   }
 
   @Test
   fun moshi_kotlin_reflective_buffer_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshiKotlinBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled {
+      ReflectiveMoshiKotlinBuffer(json).also { it.setupIteration() }
+    }
     param.adapter.fromJson(param.bufferedSource)
-  }
-
-  @Test
-  fun moshi_kotlin_reflective_buffer_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveMoshiKotlinBuffer().also { it.setupIteration() } }
-    param.adapter.fromJson(param.minifiedBufferedSource)
   }
 
   @Test
   fun moshi_kotlin_codegen_buffer_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlinBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled {
+      CodegenMoshiKotlinBuffer(json).also { it.setupIteration() }
+    }
     param.adapter.fromJson(param.bufferedSource)
   }
 
   @Test
-  fun moshi_kotlin_codegen_buffer_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { CodegenMoshiKotlinBuffer().also { it.setupIteration() } }
-    param.adapter.fromJson(param.minifiedBufferedSource)
-  }
-
-  @Test
   fun gson_reflective_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { ReflectiveGson() }
-    param.adapter.fromJson(param.json)
+    val param = runWithTimingDisabled { ReflectiveGson(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun gson_autovalue_string_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGson() }
-    param.adapter.fromJson(param.json)
-  }
-
-  @Test
-  fun gson_autovalue_string_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGson() }
-    param.adapter.fromJson(param.minifiedJson)
+    val param = runWithTimingDisabled { AVGson(json) }
+    param.adapter.fromJson(json)
   }
 
   @Test
   fun gson_autovalue_buffer_fromJson() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGsonBuffer().also { it.setupIteration() } }
+    val param = runWithTimingDisabled { AVGsonBuffer(json).also { it.setupIteration() } }
     param.adapter.fromJson(param.source)
-  }
-
-  @Test
-  fun gson_autovalue_buffer_fromJson_minified() = benchmarkRule.measureRepeated {
-    val param = runWithTimingDisabled { AVGsonBuffer().also { it.setupIteration() } }
-    param.adapter.fromJson(param.minifiedSource)
   }
 }
