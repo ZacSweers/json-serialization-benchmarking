@@ -1,0 +1,37 @@
+site_name: JSON Serialization Benchmarks
+repo_name: json-serialization-benchmarking
+repo_url: https://github.com/ZacSweers/json-serialization-benchmarking
+site_description: "Misc benchmarks for JSON serialization."
+site_author: Zac Sweers
+remote_branch: gh-pages
+
+copyright: 'Copyright &copy; 2019 Zac Sweers'
+
+theme:
+  name: 'material'
+  palette:
+    primary: 'white'
+    accent: 'orange'
+
+markdown_extensions:
+  - smarty
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - tables
+
+nav:
+  - 'Overview': index.md
+  - 'Results': /results/
+  - 'Changelog' : changelog.md
+  - 'Contributing': contributing.md
