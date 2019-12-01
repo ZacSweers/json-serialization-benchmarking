@@ -5,36 +5,50 @@ import java.util.Locale
 fun main() {
 
   val data = """
-benchmark:     7,917,396 ns SpeedTest.moshi_kotlin_reflective_buffer_fromJson_minified
-benchmark:     6,119,531 ns SpeedTest.gson_reflective_string_fromJson
-benchmark:     5,267,761 ns SpeedTest.gson_autovalue_string_fromJson
-benchmark:     5,675,990 ns SpeedTest.moshi_kotlin_codegen_buffer_fromJson_minified
-benchmark:     5,681,614 ns SpeedTest.kserializer_string_fromJson_minified
-benchmark:     7,589,376 ns SpeedTest.moshi_autovalue_buffer_fromJson
-benchmark:     4,853,646 ns SpeedTest.gson_autovalue_string_fromJson_minified
-benchmark:     5,421,251 ns SpeedTest.moshi_autovalue_string_toJson
-benchmark:     8,762,918 ns SpeedTest.moshi_autovalue_string_fromJson
-benchmark:     6,539,064 ns SpeedTest.moshi_kotlin_codegen_string_fromJson_minified
-benchmark:   159,748,923 ns SpeedTest.gson_autovalue_buffer_toJson
-benchmark:     7,617,241 ns SpeedTest.moshi_kotlin_codegen_buffer_fromJson
-benchmark:     9,882,917 ns SpeedTest.moshi_kotlin_reflective_buffer_fromJson
-benchmark:     4,029,636 ns SpeedTest.moshi_kotlin_codegen_buffer_toJson
-benchmark:     8,892,449 ns SpeedTest.moshi_kotlin_codegen_string_fromJson
-benchmark:    11,145,313 ns SpeedTest.moshi_kotlin_reflective_string_fromJson
-benchmark:     7,427,344 ns SpeedTest.moshi_kotlin_reflective_buffer_toJson
-benchmark:     7,548,490 ns SpeedTest.moshi_autovalue_buffer_fromJson_minified
-benchmark:     6,401,875 ns SpeedTest.kserializer_string_fromJson
-benchmark:     6,454,845 ns SpeedTest.gson_autovalue_string_toJson
-benchmark:     6,475,990 ns SpeedTest.moshi_autovalue_string_fromJson_minified
-benchmark:     6,152,761 ns SpeedTest.moshi_reflective_string_toJson
-benchmark:     5,434,428 ns SpeedTest.moshi_kotlin_codegen_string_toJson
-benchmark:     5,239,636 ns SpeedTest.kserializer_string_toJson
-benchmark:     8,142,605 ns SpeedTest.gson_reflective_string_toJson
-benchmark:     4,031,564 ns SpeedTest.moshi_autovalue_buffer_toJson
-benchmark:    10,481,563 ns SpeedTest.moshi_reflective_string_fromJson
-benchmark:     8,669,168 ns SpeedTest.moshi_kotlin_reflective_string_toJson
-benchmark:     7,048,855 ns SpeedTest.gson_autovalue_buffer_fromJson
-benchmark:     6,158,126 ns SpeedTest.gson_autovalue_buffer_fromJson_minified
+benchmark:     5,678,593 ns JsonSerializationBenchmark.gson_reflective_string_fromJson[minified=true]
+benchmark:     4,854,687 ns JsonSerializationBenchmark.gson_autovalue_string_fromJson[minified=true]
+benchmark:     5,705,469 ns JsonSerializationBenchmark.moshi_autovalue_buffer_fromJson[minified=true]
+benchmark:     5,413,751 ns JsonSerializationBenchmark.moshi_autovalue_string_toJson[minified=true]
+benchmark:     6,669,532 ns JsonSerializationBenchmark.moshi_autovalue_string_fromJson[minified=true]
+benchmark:   160,393,974 ns JsonSerializationBenchmark.gson_autovalue_buffer_toJson[minified=true]
+benchmark:     5,735,052 ns JsonSerializationBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=true]
+benchmark:     8,100,000 ns JsonSerializationBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=true]
+benchmark:     3,825,365 ns JsonSerializationBenchmark.moshi_kotlin_codegen_buffer_toJson[minified=true]
+benchmark:     6,673,698 ns JsonSerializationBenchmark.moshi_kotlin_codegen_string_fromJson[minified=true]
+benchmark:     9,024,428 ns JsonSerializationBenchmark.moshi_kotlin_reflective_string_fromJson[minified=true]
+benchmark:     7,219,272 ns JsonSerializationBenchmark.moshi_kotlin_reflective_buffer_toJson[minified=true]
+benchmark:     5,772,345 ns JsonSerializationBenchmark.kserializer_string_fromJson[minified=true]
+benchmark:     6,162,865 ns JsonSerializationBenchmark.gson_autovalue_string_toJson[minified=true]
+benchmark:     6,316,824 ns JsonSerializationBenchmark.moshi_reflective_string_toJson[minified=true]
+benchmark:     5,442,292 ns JsonSerializationBenchmark.moshi_kotlin_codegen_string_toJson[minified=true]
+benchmark:     5,368,125 ns JsonSerializationBenchmark.kserializer_string_toJson[minified=true]
+benchmark:     7,916,772 ns JsonSerializationBenchmark.gson_reflective_string_toJson[minified=true]
+benchmark:     3,760,470 ns JsonSerializationBenchmark.moshi_autovalue_buffer_toJson[minified=true]
+benchmark:     8,197,866 ns JsonSerializationBenchmark.moshi_reflective_string_fromJson[minified=true]
+benchmark:     8,733,439 ns JsonSerializationBenchmark.moshi_kotlin_reflective_string_toJson[minified=true]
+benchmark:     6,195,417 ns JsonSerializationBenchmark.gson_autovalue_buffer_fromJson[minified=true]
+benchmark:     6,346,979 ns JsonSerializationBenchmark.gson_reflective_string_fromJson[minified=false]
+benchmark:     5,340,678 ns JsonSerializationBenchmark.gson_autovalue_string_fromJson[minified=false]
+benchmark:     7,641,979 ns JsonSerializationBenchmark.moshi_autovalue_buffer_fromJson[minified=false]
+benchmark:     5,477,969 ns JsonSerializationBenchmark.moshi_autovalue_string_toJson[minified=false]
+benchmark:     8,940,730 ns JsonSerializationBenchmark.moshi_autovalue_string_fromJson[minified=false]
+benchmark:   160,235,693 ns JsonSerializationBenchmark.gson_autovalue_buffer_toJson[minified=false]
+benchmark:     7,740,677 ns JsonSerializationBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=false]
+benchmark:    10,143,074 ns JsonSerializationBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=false]
+benchmark:     3,786,511 ns JsonSerializationBenchmark.moshi_kotlin_codegen_buffer_toJson[minified=false]
+benchmark:     8,981,979 ns JsonSerializationBenchmark.moshi_kotlin_codegen_string_fromJson[minified=false]
+benchmark:    11,272,241 ns JsonSerializationBenchmark.moshi_kotlin_reflective_string_fromJson[minified=false]
+benchmark:     7,118,177 ns JsonSerializationBenchmark.moshi_kotlin_reflective_buffer_toJson[minified=false]
+benchmark:     6,430,939 ns JsonSerializationBenchmark.kserializer_string_fromJson[minified=false]
+benchmark:     6,150,938 ns JsonSerializationBenchmark.gson_autovalue_string_toJson[minified=false]
+benchmark:     6,378,959 ns JsonSerializationBenchmark.moshi_reflective_string_toJson[minified=false]
+benchmark:     5,425,104 ns JsonSerializationBenchmark.moshi_kotlin_codegen_string_toJson[minified=false]
+benchmark:     5,257,553 ns JsonSerializationBenchmark.kserializer_string_toJson[minified=false]
+benchmark:     7,851,667 ns JsonSerializationBenchmark.gson_reflective_string_toJson[minified=false]
+benchmark:     3,734,376 ns JsonSerializationBenchmark.moshi_autovalue_buffer_toJson[minified=false]
+benchmark:    10,500,313 ns JsonSerializationBenchmark.moshi_reflective_string_fromJson[minified=false]
+benchmark:     8,552,606 ns JsonSerializationBenchmark.moshi_kotlin_reflective_string_toJson[minified=false]
+benchmark:     7,027,032 ns JsonSerializationBenchmark.gson_autovalue_buffer_fromJson[minified=false]
   """.trimIndent()
 
   // Skip the header line
@@ -48,14 +62,18 @@ benchmark:     6,158,126 ns SpeedTest.gson_autovalue_buffer_fromJson_minified
             units = units
         )
       }
+      .filterNot {
+        // Minified doesn't matter in toJson, so filter out half of them
+        "_toJson" in it.benchmark && "minified=false" in it.benchmark
+      }
       .toList()
 
   ResultType.values().forEach { printResults(it, results) }
 }
 
 private fun printResults(type: ResultType, results: List<Analysis>) {
-  val groupedResults = type.groupings.associate { grouping ->
-    grouping to results.filter {
+  val groupedResults = type.groupings.associateWith { grouping ->
+    results.filter {
       grouping.matchFunction(it.benchmark)
     }
   }
@@ -120,12 +138,12 @@ private enum class ResultType(val description: String, val groupings: List<Group
   )
 }
 
-private data class Grouping(
+internal data class Grouping(
     val name: String,
     val matchFunction: (String) -> Boolean
 )
 
-private data class Analysis(
+internal data class Analysis(
     val benchmark: String,
     val score: Long,
     val units: String
@@ -142,5 +160,5 @@ private data class Analysis(
     get() = String.format(Locale.US, "%,d", score)
 }
 
-private operator fun <T> List<T>.component6(): T = this[5]
-private operator fun <T> List<T>.component7(): T = this[6]
+internal operator fun <T> List<T>.component6(): T = this[5]
+internal operator fun <T> List<T>.component7(): T = this[6]
