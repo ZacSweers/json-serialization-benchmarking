@@ -5,45 +5,63 @@ import java.util.Locale
 fun main() {
 
   val data = """
-JmhBenchmark.gson_autovalue_buffer_fromJson                    thrpt   25  1222.809 ±  6.776  ops/s
-JmhBenchmark.gson_autovalue_buffer_fromJson_minified           thrpt   25  1336.091 ± 16.250  ops/s
-JmhBenchmark.gson_autovalue_buffer_toJson                      thrpt   25   642.586 ± 19.840  ops/s
-JmhBenchmark.gson_autovalue_string_fromJson                    thrpt   25  1295.682 ± 24.112  ops/s
-JmhBenchmark.gson_autovalue_string_fromJson_minified           thrpt   25  1422.573 ± 17.722  ops/s
-JmhBenchmark.gson_autovalue_string_toJson                      thrpt   25  1212.849 ± 17.831  ops/s
-JmhBenchmark.gson_reflective_string_fromJson                   thrpt   25  1388.944 ± 24.591  ops/s
-JmhBenchmark.gson_reflective_string_toJson                     thrpt   25  1012.079 ±  9.862  ops/s
-JmhBenchmark.kserializer_string_fromJson                       thrpt   25  1413.365 ± 13.823  ops/s
-JmhBenchmark.kserializer_string_fromJson_minified              thrpt   25  1639.444 ± 14.787  ops/s
-JmhBenchmark.kserializer_string_toJson                         thrpt   25  1340.387 ±  8.966  ops/s
-JmhBenchmark.moshi_autovalue_buffer_fromJson                   thrpt   25   974.813 ± 12.968  ops/s
-JmhBenchmark.moshi_autovalue_buffer_fromJson_minified          thrpt   25   959.581 ± 13.067  ops/s
-JmhBenchmark.moshi_autovalue_buffer_toJson                     thrpt   25  1577.050 ± 77.249  ops/s
-JmhBenchmark.moshi_autovalue_string_fromJson                   thrpt   25   888.303 ±  6.405  ops/s
-JmhBenchmark.moshi_autovalue_string_fromJson_minified          thrpt   25  1199.122 ±  9.959  ops/s
-JmhBenchmark.moshi_autovalue_string_toJson                     thrpt   25  1477.759 ± 12.712  ops/s
-JmhBenchmark.moshi_kotlin_codegen_buffer_fromJson              thrpt   25   984.343 ± 14.441  ops/s
-JmhBenchmark.moshi_kotlin_codegen_buffer_fromJson_minified     thrpt   25  1375.027 ± 35.050  ops/s
-JmhBenchmark.moshi_kotlin_codegen_buffer_toJson                thrpt   25  1572.972 ± 95.974  ops/s
-JmhBenchmark.moshi_kotlin_codegen_string_fromJson              thrpt   25   872.131 ±  5.331  ops/s
-JmhBenchmark.moshi_kotlin_codegen_string_fromJson_minified     thrpt   25  1205.473 ±  7.955  ops/s
-JmhBenchmark.moshi_kotlin_codegen_string_toJson                thrpt   25  1473.877 ± 14.480  ops/s
-JmhBenchmark.moshi_kotlin_reflective_buffer_fromJson           thrpt   25   838.602 ±  7.488  ops/s
-JmhBenchmark.moshi_kotlin_reflective_buffer_fromJson_minified  thrpt   25  1128.853 ±  9.983  ops/s
-JmhBenchmark.moshi_kotlin_reflective_buffer_toJson             thrpt   25  1372.856 ± 22.928  ops/s
-JmhBenchmark.moshi_kotlin_reflective_string_fromJson           thrpt   25   741.541 ± 24.851  ops/s
-JmhBenchmark.moshi_kotlin_reflective_string_toJson             thrpt   25  1186.398 ± 21.733  ops/s
-JmhBenchmark.moshi_reflective_string_fromJson                  thrpt   25   791.379 ± 11.537  ops/s
-JmhBenchmark.moshi_reflective_string_toJson                    thrpt   25  1420.034 ± 17.002  ops/s
+JmhBenchmark.gson_autovalue_buffer_fromJson                 true  thrpt   25  1525.482 ± 42.836  ops/s
+JmhBenchmark.gson_autovalue_buffer_fromJson                false  thrpt   25  1409.158 ±  8.407  ops/s
+JmhBenchmark.gson_autovalue_buffer_toJson                   true  thrpt   25   754.222 ± 15.435  ops/s
+JmhBenchmark.gson_autovalue_buffer_toJson                  false  thrpt   25   760.290 ±  9.819  ops/s
+JmhBenchmark.gson_autovalue_string_fromJson                 true  thrpt   25  1781.907 ± 22.567  ops/s
+JmhBenchmark.gson_autovalue_string_fromJson                false  thrpt   25  1593.688 ± 48.073  ops/s
+JmhBenchmark.gson_autovalue_string_toJson                   true  thrpt   25  1665.459 ± 91.108  ops/s
+JmhBenchmark.gson_autovalue_string_toJson                  false  thrpt   25  1746.740 ± 13.886  ops/s
+JmhBenchmark.gson_reflective_string_fromJson                true  thrpt   25  1886.678 ± 69.660  ops/s
+JmhBenchmark.gson_reflective_string_fromJson               false  thrpt   25  1767.980 ± 15.606  ops/s
+JmhBenchmark.gson_reflective_string_toJson                  true  thrpt   25  1321.148 ± 40.046  ops/s
+JmhBenchmark.gson_reflective_string_toJson                 false  thrpt   25  1356.219 ± 34.235  ops/s
+JmhBenchmark.kserializer_string_fromJson                    true  thrpt   25  1560.665 ± 21.197  ops/s
+JmhBenchmark.kserializer_string_fromJson                   false  thrpt   25  1431.960 ± 22.652  ops/s
+JmhBenchmark.kserializer_string_toJson                      true  thrpt   25  1387.467 ± 40.396  ops/s
+JmhBenchmark.kserializer_string_toJson                     false  thrpt   25  1346.139 ± 16.223  ops/s
+JmhBenchmark.moshi_autovalue_buffer_fromJson                true  thrpt   25  1599.001 ± 18.123  ops/s
+JmhBenchmark.moshi_autovalue_buffer_fromJson               false  thrpt   25  1083.885 ± 25.161  ops/s
+JmhBenchmark.moshi_autovalue_buffer_toJson                  true  thrpt   25  1765.929 ± 16.492  ops/s
+JmhBenchmark.moshi_autovalue_buffer_toJson                 false  thrpt   25  1713.932 ± 43.726  ops/s
+JmhBenchmark.moshi_autovalue_string_fromJson                true  thrpt   25  1403.610 ± 33.427  ops/s
+JmhBenchmark.moshi_autovalue_string_fromJson               false  thrpt   25   993.052 ± 30.950  ops/s
+JmhBenchmark.moshi_autovalue_string_toJson                  true  thrpt   25  1502.739 ±  6.458  ops/s
+JmhBenchmark.moshi_autovalue_string_toJson                 false  thrpt   25  1480.423 ± 28.656  ops/s
+JmhBenchmark.moshi_kotlin_codegen_buffer_fromJson           true  thrpt   25  1589.254 ± 11.012  ops/s
+JmhBenchmark.moshi_kotlin_codegen_buffer_fromJson          false  thrpt   25  1070.076 ± 11.175  ops/s
+JmhBenchmark.moshi_kotlin_codegen_buffer_toJson             true  thrpt   25  1857.140 ± 82.876  ops/s
+JmhBenchmark.moshi_kotlin_codegen_buffer_toJson            false  thrpt   25  1751.169 ± 96.660  ops/s
+JmhBenchmark.moshi_kotlin_codegen_string_fromJson           true  thrpt   25  1413.896 ± 26.525  ops/s
+JmhBenchmark.moshi_kotlin_codegen_string_fromJson          false  thrpt   25   960.448 ± 23.985  ops/s
+JmhBenchmark.moshi_kotlin_codegen_string_toJson             true  thrpt   25  1680.681 ± 70.284  ops/s
+JmhBenchmark.moshi_kotlin_codegen_string_toJson            false  thrpt   25  1493.409 ± 17.646  ops/s
+JmhBenchmark.moshi_kotlin_reflective_buffer_fromJson        true  thrpt   25  1371.793 ± 12.505  ops/s
+JmhBenchmark.moshi_kotlin_reflective_buffer_fromJson       false  thrpt   25   966.614 ± 13.090  ops/s
+JmhBenchmark.moshi_kotlin_reflective_buffer_toJson          true  thrpt   25  1560.115 ± 54.810  ops/s
+JmhBenchmark.moshi_kotlin_reflective_buffer_toJson         false  thrpt   25  1579.324 ± 74.541  ops/s
+JmhBenchmark.moshi_kotlin_reflective_string_fromJson        true  thrpt   25  1250.486 ± 17.789  ops/s
+JmhBenchmark.moshi_kotlin_reflective_string_fromJson       false  thrpt   25   874.268 ± 15.619  ops/s
+JmhBenchmark.moshi_kotlin_reflective_string_toJson          true  thrpt   25  1291.330 ± 12.340  ops/s
+JmhBenchmark.moshi_kotlin_reflective_string_toJson         false  thrpt   25  1319.377 ± 39.128  ops/s
+JmhBenchmark.moshi_reflective_string_fromJson               true  thrpt   25  1373.449 ±  5.726  ops/s
+JmhBenchmark.moshi_reflective_string_fromJson              false  thrpt   25   932.438 ± 16.473  ops/s
+JmhBenchmark.moshi_reflective_string_toJson                 true  thrpt   25  1441.979 ± 11.832  ops/s
+JmhBenchmark.moshi_reflective_string_toJson                false  thrpt   25  1503.545 ± 63.463  ops/s
   """.trimIndent()
 
   // Skip the header line
   val results = data.lineSequence()
-      .map { line ->
+      .mapNotNull { line ->
         // JmhBenchmark.kserializer_string_fromJson_minified              thrpt   25  2004.991 ±  15.008  ops/s
-        val (benchmark, mode, count, score, _, error, units) = line.split("\\s+".toRegex())
+        val (benchmark, minified, mode, count, score, _, error, units) = line.split("\\s+".toRegex())
+        if ("_toJson" in benchmark && !minified.toBoolean()) {
+          // Minified doesn't matter in toJson so just filter them out
+          return@mapNotNull null
+        }
         Analysis(
-            benchmark,
+            "$benchmark[minified=$minified]",
             mode,
             count.toInt(),
             score.toDouble(),
@@ -150,3 +168,4 @@ private data class Analysis(
 
 private operator fun <T> List<T>.component6(): T = this[5]
 private operator fun <T> List<T>.component7(): T = this[6]
+private operator fun <T> List<T>.component8(): T = this[7]
