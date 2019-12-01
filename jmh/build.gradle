@@ -21,7 +21,7 @@ jmh {
 
 dependencies {
     jmh 'com.google.guava:guava:27.1-jre'
-    jmh 'com.squareup.okio:okio:2.2.2'
-    compile "org.openjdk.jmh:jmh-core:$jmh_version"
-    compile project(":models")
+    jmh 'com.squareup.okio:okio:2.4.1'
+    implementation "org.openjdk.jmh:jmh-core:$jmh_version"
+    implementation project(":models")
 }
