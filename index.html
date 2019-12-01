@@ -208,7 +208,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="results/jmh/" class="md-tabs__link">
+        <a href="results/android-polymorphic/" class="md-tabs__link">
           Results
         </a>
       
@@ -295,9 +295,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    Project structure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#running-locally" class="md-nav__link">
     Running locally
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jmh-tests" class="md-nav__link">
+    JMH tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#android-tests" class="md-nav__link">
+    Android tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -361,6 +388,42 @@
 
 
   <li class="md-nav__item">
+    <a href="results/android-polymorphic/" title="Android polymorphic" class="md-nav__link">
+      Android polymorphic
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="results/android/" title="Android" class="md-nav__link">
+      Android
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="results/jmh-polymorphic/" title="Jmh polymorphic" class="md-nav__link">
+      Jmh polymorphic
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="results/jmh/" title="Jmh" class="md-nav__link">
       Jmh
     </a>
@@ -398,9 +461,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    Project structure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#running-locally" class="md-nav__link">
     Running locally
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jmh-tests" class="md-nav__link">
+    JMH tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#android-tests" class="md-nav__link">
+    Android tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -425,28 +515,41 @@
                 
                   <h1>Home</h1>
                 
-                <ul>
-<li>These benchmarks compare&hellip;</li>
+                <p>These benchmarks compare&hellip;</p>
+<ul>
 <li>Gson, Moshi, kotlinx serialization</li>
 <li>Reflective vs streaming APIs (via code gen)</li>
 <li>Moshi&rsquo;s Kotlin support (reflective or code gen for streaming APIs)</li>
-<li>Note Kotlinx serialization only works via the standard compiler plugin</li>
-<li>&ldquo;Minified&rdquo; means the JSON was minified with whitespaces between keys and values removed.</li>
-<li>Note this is only relevant for deserialization.</li>
-<li>AutoValue APIs are done via AutoValue models with the auto-value-gson/Moshi extensions, thus using generated adapters.</li>
-<li>Kotlin codegen generates Kotlin JsonAdapters.</li>
-<li>Reflection is done usually on a simple class due to limitations of instantiation. Moshi&rsquo;s reflection library is the exception (it can handle <code>data class</code> types)</li>
-<li>String serialization is a practical example, buffered input/output is likely more representative of how your stack works in terms of I/O</li>
 </ul>
+<p>Note Kotlinx serialization only works via the standard compiler plugin</p>
+<p>&ldquo;Minified&rdquo; means the JSON was minified with whitespaces between keys and values removed. Note this is only relevant for deserialization.</p>
+<p>AutoValue APIs are done via AutoValue models with the auto-value-gson/Moshi extensions, thus using generated adapters.</p>
+<p>Kotlin codegen generates Kotlin JsonAdapters.</p>
+<p>Reflection is done usually on a simple class due to limitations of instantiation. Moshi&rsquo;s reflection library is the exception (it can handle <code>data class</code> types)</p>
+<p>String serialization is a practical example, buffered input/output is likely more representative of how your stack works in terms of I/O</p>
 <h2 id="latest-results-tldr">Latest results TL;DR<a class="headerlink" href="#latest-results-tldr" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fastest reader: Moshi</li>
 <li>Fastest writer: Moshi</li>
 </ul>
 <p>Speed is not everything though! Different libraries come with different trade offs. That said, these <em>are</em> benchmarks.</p>
+<h2 id="project-structure">Project structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>:models</code> - all the core models being benchmarked + json files (in resources)</li>
+<li><code>:jmh</code> - JMH benchmarks</li>
+<li><code>:android:benchmark</code> - Android benchmarks</li>
+</ul>
+<p>For each of the JMH and Android benchmarks, there are two kinds of benchmarks:</p>
+<ul>
+<li>A core &ldquo;Benchmark&rdquo; for pure speed comparisons</li>
+<li>A polymorphic test. In the case of this project, these tests are purely comparing Moshi&rsquo;s <code>PolymorphicJsonAdapterFactory</code>
+against Gson&rsquo;s <code>RuntimeTypeAdapterFactory</code>.</li>
+</ul>
 <h2 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h2>
-<p>To run:</p>
-<p><code>./gradlew jmh</code></p>
+<h3 id="jmh-tests">JMH tests<a class="headerlink" href="#jmh-tests" title="Permanent link">&para;</a></h3>
+<p><code>./gradlew jmh -Pjmh=&lt;File name to Run&gt;</code></p>
+<h3 id="android-tests">Android tests<a class="headerlink" href="#android-tests" title="Permanent link">&para;</a></h3>
+<p><code>./gradlew :android:benchmark:connectedCheck</code></p>
 <p>You can use respective <code>*DataParser.kt</code> files to parse the raw results (starting with the first
 benchmark line after the headers).</p>
                 

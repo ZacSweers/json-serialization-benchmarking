@@ -13,7 +13,7 @@
         <meta name="description" content="Misc benchmarks for JSON serialization.">
       
       
-        <link rel="canonical" href="https://zacsweers.github.io/json-serialization-benchmarking/changelog/">
+        <link rel="canonical" href="https://zacsweers.github.io/json-serialization-benchmarking/results/android/">
       
       
         <meta name="author" content="Zac Sweers">
@@ -37,18 +37,18 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
     
     
       
-        <title>Changelog - JSON Serialization Benchmarks</title>
+        <title>Android - JSON Serialization Benchmarks</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -57,7 +57,7 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
@@ -66,7 +66,7 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
     
@@ -91,7 +91,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#changelog" tabindex="1" class="md-skip">
+      <a href="#current-raw-android-polymorphic-benchmark-results-lower-score-is-better" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -117,7 +117,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Changelog
+                Android
               
             </span>
           
@@ -185,14 +185,16 @@
       
         
 
-<nav class="md-tabs" data-md-component="tabs">
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
   <div class="md-tabs__inner md-grid">
     <ul class="md-tabs__list">
       
         
   <li class="md-tabs__item">
     
-      <a href=".." class="md-tabs__link md-tabs__link--active">
+      <a href="../.." class="md-tabs__link">
         Home
       </a>
     
@@ -208,7 +210,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../results/android-polymorphic/" class="md-tabs__link">
+        <a href="../android-polymorphic/" class="md-tabs__link md-tabs__link--active">
           Results
         </a>
       
@@ -265,7 +267,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Home" class="md-nav__link">
+    <a href="../.." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -275,49 +277,11 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Changelog
-      </label>
-    
-    <a href="./" title="Changelog" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../../changelog/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#2019-12-01" class="md-nav__link">
-    2019-12-01
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
     
@@ -327,7 +291,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../contributing/" title="Contributing" class="md-nav__link">
+    <a href="../../contributing/" title="Contributing" class="md-nav__link">
       Contributing
     </a>
   </li>
@@ -337,10 +301,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
     <label class="md-nav__link" for="nav-4">
       Results
@@ -358,7 +324,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../results/android-polymorphic/" title="Android polymorphic" class="md-nav__link">
+    <a href="../android-polymorphic/" title="Android polymorphic" class="md-nav__link">
       Android polymorphic
     </a>
   </li>
@@ -368,11 +334,45 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../results/android/" title="Android" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Android
+      </label>
+    
+    <a href="./" title="Android" class="md-nav__link md-nav__link--active">
       Android
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current-raw-android-polymorphic-benchmark-results-lower-score-is-better" class="md-nav__link">
+    Current raw Android polymorphic benchmark results (lower score is better)
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -382,7 +382,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../results/jmh-polymorphic/" title="Jmh polymorphic" class="md-nav__link">
+    <a href="../jmh-polymorphic/" title="Jmh polymorphic" class="md-nav__link">
       Jmh polymorphic
     </a>
   </li>
@@ -394,7 +394,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../results/jmh/" title="Jmh" class="md-nav__link">
+    <a href="../jmh/" title="Jmh" class="md-nav__link">
       Jmh
     </a>
   </li>
@@ -419,15 +419,13 @@
 <nav class="md-nav md-nav--secondary">
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#2019-12-01" class="md-nav__link">
-    2019-12-01
+  <a href="#current-raw-android-polymorphic-benchmark-results-lower-score-is-better" class="md-nav__link">
+    Current raw Android polymorphic benchmark results (lower score is better)
   </a>
   
 </li>
@@ -448,12 +446,98 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/ZacSweers/json-serialization-benchmarking/edit/master/docs/changelog.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/ZacSweers/json-serialization-benchmarking/edit/master/docs/results/android.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h2 id="2019-12-01">2019-12-01<a class="headerlink" href="#2019-12-01" title="Permanent link">&para;</a></h2>
-<p>Changelog started, current state of project.</p>
+                  <h1>Android</h1>
+                
+                <h2 id="current-raw-android-polymorphic-benchmark-results-lower-score-is-better">Current raw Android polymorphic benchmark results (lower score is better)<a class="headerlink" href="#current-raw-android-polymorphic-benchmark-results-lower-score-is-better" title="Permanent link">&para;</a></h2>
+<p><em>Run on a 15&rdquo; 2018 MacBook Pro. 32GB RAM, 2.9 GHz 6-Core Intel Core i9</em></p>
+<p>Grouped by serialization type (read, write, buffered, string):</p>
+<div class="codehilite"><pre><span></span>Read (buffered)
+AndroidBenchmark.moshi_autovalue_buffer_fromJson[minified=true]             5,705,469  ns
+AndroidBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=true]        5,735,052  ns
+AndroidBenchmark.gson_autovalue_buffer_fromJson[minified=true]              6,195,417  ns
+AndroidBenchmark.gson_autovalue_buffer_fromJson[minified=false]             7,027,032  ns
+AndroidBenchmark.moshi_autovalue_buffer_fromJson[minified=false]            7,641,979  ns
+AndroidBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=false]       7,740,677  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=true]     8,100,000  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=false]   10,143,074  ns
+
+Read (string)
+AndroidBenchmark.gson_autovalue_string_fromJson[minified=true]              4,854,687  ns
+AndroidBenchmark.gson_autovalue_string_fromJson[minified=false]             5,340,678  ns
+AndroidBenchmark.gson_reflective_string_fromJson[minified=true]             5,678,593  ns
+AndroidBenchmark.kserializer_string_fromJson[minified=true]                 5,772,345  ns
+AndroidBenchmark.gson_reflective_string_fromJson[minified=false]            6,346,979  ns
+AndroidBenchmark.kserializer_string_fromJson[minified=false]                6,430,939  ns
+AndroidBenchmark.moshi_autovalue_string_fromJson[minified=true]             6,669,532  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_fromJson[minified=true]        6,673,698  ns
+AndroidBenchmark.moshi_reflective_string_fromJson[minified=true]            8,197,866  ns
+AndroidBenchmark.moshi_autovalue_string_fromJson[minified=false]            8,940,730  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_fromJson[minified=false]       8,981,979  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_fromJson[minified=true]     9,024,428  ns
+AndroidBenchmark.moshi_reflective_string_fromJson[minified=false]          10,500,313  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_fromJson[minified=false]   11,272,241  ns
+
+Write (buffered)
+AndroidBenchmark.moshi_autovalue_buffer_toJson[minified=true]               3,760,470  ns
+AndroidBenchmark.moshi_kotlin_codegen_buffer_toJson[minified=true]          3,825,365  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_toJson[minified=true]       7,219,272  ns
+AndroidBenchmark.gson_autovalue_buffer_toJson[minified=true]              160,393,974  ns
+
+Write (string)
+AndroidBenchmark.kserializer_string_toJson[minified=true]                   5,368,125  ns
+AndroidBenchmark.moshi_autovalue_string_toJson[minified=true]               5,413,751  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_toJson[minified=true]          5,442,292  ns
+AndroidBenchmark.gson_autovalue_string_toJson[minified=true]                6,162,865  ns
+AndroidBenchmark.moshi_reflective_string_toJson[minified=true]              6,316,824  ns
+AndroidBenchmark.gson_reflective_string_toJson[minified=true]               7,916,772  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_toJson[minified=true]       8,733,439  ns
+</pre></div>
+
+<p>Grouped by library (interesting to see how reflection vs custom adapters affects perf within a library):</p>
+<div class="codehilite"><pre><span></span>GSON
+AndroidBenchmark.gson_autovalue_string_fromJson[minified=true]              4,854,687  ns
+AndroidBenchmark.gson_autovalue_string_fromJson[minified=false]             5,340,678  ns
+AndroidBenchmark.gson_reflective_string_fromJson[minified=true]             5,678,593  ns
+AndroidBenchmark.gson_autovalue_string_toJson[minified=true]                6,162,865  ns
+AndroidBenchmark.gson_autovalue_buffer_fromJson[minified=true]              6,195,417  ns
+AndroidBenchmark.gson_reflective_string_fromJson[minified=false]            6,346,979  ns
+AndroidBenchmark.gson_autovalue_buffer_fromJson[minified=false]             7,027,032  ns
+AndroidBenchmark.gson_reflective_string_toJson[minified=true]               7,916,772  ns
+AndroidBenchmark.gson_autovalue_buffer_toJson[minified=true]              160,393,974  ns
+
+Kotlinx Serialization
+AndroidBenchmark.kserializer_string_toJson[minified=true]                   5,368,125  ns
+AndroidBenchmark.kserializer_string_fromJson[minified=true]                 5,772,345  ns
+AndroidBenchmark.kserializer_string_fromJson[minified=false]                6,430,939  ns
+
+Moshi
+AndroidBenchmark.moshi_autovalue_buffer_toJson[minified=true]               3,760,470  ns
+AndroidBenchmark.moshi_autovalue_string_toJson[minified=true]               5,413,751  ns
+AndroidBenchmark.moshi_autovalue_buffer_fromJson[minified=true]             5,705,469  ns
+AndroidBenchmark.moshi_reflective_string_toJson[minified=true]              6,316,824  ns
+AndroidBenchmark.moshi_autovalue_string_fromJson[minified=true]             6,669,532  ns
+AndroidBenchmark.moshi_autovalue_buffer_fromJson[minified=false]            7,641,979  ns
+AndroidBenchmark.moshi_reflective_string_fromJson[minified=true]            8,197,866  ns
+AndroidBenchmark.moshi_autovalue_string_fromJson[minified=false]            8,940,730  ns
+AndroidBenchmark.moshi_reflective_string_fromJson[minified=false]          10,500,313  ns
+
+Moshi Kotlin
+AndroidBenchmark.moshi_kotlin_codegen_buffer_toJson[minified=true]          3,825,365  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_toJson[minified=true]          5,442,292  ns
+AndroidBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=true]        5,735,052  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_fromJson[minified=true]        6,673,698  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_toJson[minified=true]       7,219,272  ns
+AndroidBenchmark.moshi_kotlin_codegen_buffer_fromJson[minified=false]       7,740,677  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=true]     8,100,000  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_toJson[minified=true]       8,733,439  ns
+AndroidBenchmark.moshi_kotlin_codegen_string_fromJson[minified=false]       8,981,979  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_fromJson[minified=true]     9,024,428  ns
+AndroidBenchmark.moshi_kotlin_reflective_buffer_fromJson[minified=false]   10,143,074  ns
+AndroidBenchmark.moshi_kotlin_reflective_string_fromJson[minified=false]   11,272,241  ns
+</pre></div>
                 
                   
                 
@@ -474,7 +558,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href=".." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../android-polymorphic/" title="Android polymorphic" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -483,19 +567,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Home
+                Android polymorphic
               </span>
             </div>
           </a>
         
         
-          <a href="../contributing/" title="Contributing" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../jmh-polymorphic/" title="Jmh polymorphic" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Contributing
+                Jmh polymorphic
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -527,9 +611,9 @@
       
     </div>
     
-      <script src="../assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="../../assets/javascripts/application.a8b5e56f.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
   </body>

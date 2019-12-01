@@ -16,6 +16,21 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/android-polymorphic/</loc>
+     <lastmod>2019-12-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/android/</loc>
+     <lastmod>2019-12-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/jmh-polymorphic/</loc>
+     <lastmod>2019-12-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/jmh/</loc>
      <lastmod>2019-12-01</lastmod>
      <changefreq>daily</changefreq>
