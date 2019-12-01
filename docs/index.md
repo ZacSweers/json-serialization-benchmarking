@@ -17,6 +17,12 @@
 
 Speed is not everything though! Different libraries come with different trade offs. That said, these *are* benchmarks.
 
+## Project structure
+
+- `:models` - all the core models being benchmarked + json files (in resources)
+- `:jmh` - JMH benchmarks
+- `:android:benchmark` - Android benchmarks
+
 ## Running locally
 
 To run:
