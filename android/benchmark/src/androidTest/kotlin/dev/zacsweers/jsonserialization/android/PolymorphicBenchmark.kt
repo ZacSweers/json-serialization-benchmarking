@@ -41,7 +41,7 @@ class PolymorphicBenchmark(
 
   companion object {
     @JvmStatic
-    @Parameters(name = "minified={0}")
+    @Parameters(name = "minified={0},typeKeyLocation={1}")
     fun data(): List<Array<*>> {
       return listOf(
           arrayOf(true, "first"),
