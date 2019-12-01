@@ -1,5 +1,5 @@
 site_name: JSON Serialization Benchmarks
-repo_name: json-serialization-benchmarking
+repo_name: ZacSweers/json-serialization-benchmarking
 repo_url: https://github.com/ZacSweers/json-serialization-benchmarking
 site_url: https://zacsweers.github.io/json-serialization-benchmarking
 site_description: "Misc benchmarks for JSON serialization."
