@@ -23,6 +23,12 @@ Speed is not everything though! Different libraries come with different trade of
 - `:jmh` - JMH benchmarks
 - `:android:benchmark` - Android benchmarks
 
+For each of the JMH and Android benchmarks, there are two kinds of benchmarks:
+
+- A core "Benchmark" for pure speed comparisons
+- A polymorphic test. In the case of this project, these tests are purely comparing Moshi's `PolymorphicJsonAdapterFactory`
+against Gson's `RuntimeTypeAdapterFactory`.
+
 ## Running locally
 
 To run:
