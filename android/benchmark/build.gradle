@@ -1,0 +1,38 @@
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "androidx.benchmark"
+
+android {
+  compileSdkVersion 29
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 29
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    findByName("androidTest")?.java?.srcDirs("src/androidTest/kotlin")
+    findByName("main")?.java?.srcDirs("src/main/kotlin")
+  }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
+
+dependencies {
+  androidTestImplementation "com.google.guava:guava:27.1-jre"
+  androidTestImplementation "com.squareup.okio:okio:2.4.1"
+  androidTestImplementation "androidx.benchmark:benchmark-junit4:1.0.0"
+  androidTestImplementation "junit:junit:4.12"
+  androidTestImplementation "androidx.test:runner:1.2.0"
+  androidTestImplementation "androidx.test:rules:1.2.0"
+  androidTestImplementation "androidx.test.ext:junit:1.1.1"
+  implementation project(":models")
+  androidTestImplementation configurations.getByName("implementation")
+}

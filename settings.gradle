@@ -1,2 +1,5 @@
 rootProject.name = 'benchmark'
+include ':jmh'
+include ':models'
+include ':android:benchmark'
 
