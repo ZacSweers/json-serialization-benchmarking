@@ -7,6 +7,7 @@ but making this an exhaustive benchmarking suite of different tools is a non-goa
 not against PRs adding new tools as long as they fit the existing suite.
 
 Do's
+
 - If your PR modifies or adds a benchmark, please update the benchmark results. Be sure to include
 your machine's tech specs.
 - If adding a new benchmark, explain what value it's adding and why it's relevant.
@@ -15,5 +16,6 @@ your machine's tech specs.
 - Dependency updates are welcome!
 
 Don'ts
+
 - Add a new serialization tool without discussing in an issue first. If you want to demo one without
 wanting to have it merged, that's welcome and just mark it as a draft PR and then close it after.
