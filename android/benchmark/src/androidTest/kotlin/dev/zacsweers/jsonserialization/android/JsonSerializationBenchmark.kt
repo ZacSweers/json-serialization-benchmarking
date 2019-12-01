@@ -15,8 +15,8 @@
  */
 package dev.zacsweers.jsonserialization.android
 
-import androidx.benchmark.BenchmarkRule
-import androidx.benchmark.measureRepeated
+import androidx.benchmark.junit4.BenchmarkRule
+import androidx.benchmark.junit4.measureRepeated
 import androidx.test.filters.LargeTest
 import com.google.common.base.Charsets
 import com.google.common.io.Resources
@@ -59,7 +59,8 @@ class JsonSerializationBenchmark(
     @Parameters(name = "minified={0}")
     fun data(): List<Array<*>> {
       return listOf(
-          arrayOf(true, false) // minified
+          arrayOf(true),
+          arrayOf(false)
       )
     }
   }
