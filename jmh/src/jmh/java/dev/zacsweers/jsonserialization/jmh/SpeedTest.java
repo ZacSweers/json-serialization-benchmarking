@@ -3,6 +3,7 @@ package dev.zacsweers.jsonserialization.jmh;
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedJsonAdapterFactory;
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedTypeAdapterFactory;
 import dev.zacsweers.jsonserialization.models.kotlinx_serialization.Response;
+import dev.zacsweers.jsonserialization.models.java_serialization.ResponseJ;
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV;
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse;
 import dev.zacsweers.jsonserialization.models.moshiKotlinReflective.KRResponse;
@@ -68,14 +69,14 @@ public class SpeedTest {
             moshi = new Moshi.Builder().build();
             URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
             json = Resources.toString(url, Charsets.UTF_8);
-            adapter = moshi.adapter(Response.class);
+            adapter = moshi.adapter(ResponseJ.class);
             response = adapter.fromJson(json);
         }
 
         public Moshi moshi;
         public String json;
-        public Response response;
-        public JsonAdapter<Response> adapter;
+        public ResponseJ response;
+        public JsonAdapter<ResponseJ> adapter;
     }
 
     @State(Scope.Benchmark)
@@ -404,7 +405,7 @@ public class SpeedTest {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public Response moshi_reflective_string_fromJson(ReflectiveMoshi param) throws Exception {
+    public ResponseJ moshi_reflective_string_fromJson(ReflectiveMoshi param) throws Exception {
         return param.adapter.fromJson(param.json);
     }
 

@@ -29,6 +29,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedJsonAdapterFactory
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedTypeAdapterFactory
 import dev.zacsweers.jsonserialization.models.kotlinx_serialization.Response
+import dev.zacsweers.jsonserialization.models.java_serialization.ResponseJ
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse
 import dev.zacsweers.jsonserialization.models.moshiKotlinReflective.KRResponse
@@ -78,11 +79,11 @@ class JsonSerializationBenchmark(
   class ReflectiveMoshi(json: String) {
 
     private val moshi: Moshi = Moshi.Builder().build()
-    val response: Response
-    val adapter: JsonAdapter<Response>
+    val response: ResponseJ
+    val adapter: JsonAdapter<ResponseJ>
 
     init {
-      adapter = moshi.adapter(Response::class.java)
+      adapter = moshi.adapter(ResponseJ::class.java)
       response = adapter.fromJson(json)!!
     }
   }
