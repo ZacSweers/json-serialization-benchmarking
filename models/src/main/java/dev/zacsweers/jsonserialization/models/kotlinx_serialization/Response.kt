@@ -6,7 +6,9 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UnstableDefault
 
+@UseExperimental(UnstableDefault::class)
 @ImplicitReflectionSerializer
 @Serializable
 class Response {

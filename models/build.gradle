@@ -8,6 +8,12 @@ apply plugin: "net.ltgt.apt-idea"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xuse-experimental=kotlin.Experimental"]
+    }
+}
+
 dependencies {
     kapt 'com.google.auto.value:auto-value-annotations:1.7'
     kapt 'com.google.auto.value:auto-value:1.7'
