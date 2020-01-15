@@ -33,6 +33,7 @@ import dev.zacsweers.jsonserialization.models.java_serialization.ResponseJ
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse
 import dev.zacsweers.jsonserialization.models.moshiKotlinReflective.KRResponse
+import dev.zacsweers.jsonserialization.moshikotlinmetadata.MetadataKotlinJsonAdapterFactory
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.KSerializer
 import okio.Buffer
@@ -183,6 +184,27 @@ class AndroidBenchmark(
     }
   }
 
+  class ReflectiveMoshiKotlinMetadataBuffer(private val json: String) {
+
+    private val moshi: Moshi = Moshi.Builder()
+        .add(MetadataKotlinJsonAdapterFactory())
+        .build()
+    lateinit var bufferedSource: BufferedSource
+    lateinit var bufferedSink: BufferedSink
+    val response: KRResponse
+    val adapter: JsonAdapter<KRResponse>
+
+    init {
+      adapter = moshi.adapter(KRResponse::class.java)
+      response = adapter.fromJson(json)!!
+    }
+
+    fun setupIteration() {
+      bufferedSource = Buffer().write(json.toByteArray())
+      bufferedSink = Buffer()
+    }
+  }
+
   class CodegenMoshiKotlinBuffer(private val json: String) {
 
     private val moshi: Moshi = Moshi.Builder()
@@ -290,6 +312,14 @@ class AndroidBenchmark(
   }
 
   @Test
+  fun moshi_kotlin_reflective_metadata_buffer_toJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled {
+      ReflectiveMoshiKotlinMetadataBuffer(json).also { it.setupIteration() }
+    }
+    param.adapter.toJson(param.bufferedSink, param.response)
+  }
+
+  @Test
   fun moshi_kotlin_codegen_buffer_toJson() = benchmarkRule.measureRepeated {
     val param = runWithTimingDisabled {
       CodegenMoshiKotlinBuffer(json).also { it.setupIteration() }
@@ -355,6 +385,14 @@ class AndroidBenchmark(
   fun moshi_kotlin_reflective_buffer_fromJson() = benchmarkRule.measureRepeated {
     val param = runWithTimingDisabled {
       ReflectiveMoshiKotlinBuffer(json).also { it.setupIteration() }
+    }
+    param.adapter.fromJson(param.bufferedSource)
+  }
+
+  @Test
+  fun moshi_kotlin_reflective_metadata_buffer_fromJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled {
+      ReflectiveMoshiKotlinMetadataBuffer(json).also { it.setupIteration() }
     }
     param.adapter.fromJson(param.bufferedSource)
   }
