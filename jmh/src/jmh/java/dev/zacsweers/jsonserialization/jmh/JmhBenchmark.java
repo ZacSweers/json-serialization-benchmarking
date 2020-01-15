@@ -15,6 +15,7 @@ import com.google.gson.TypeAdapter;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory;
+import dev.zacsweers.jsonserialization.moshikotlinmetadata.MetadataKotlinJsonAdapterFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -231,6 +232,37 @@ public class JmhBenchmark {
     }
 
     @State(Scope.Benchmark)
+    public static class ReflectiveMoshiKotlinMetadataBuffer {
+
+        @Param({"true", "false"})
+        public boolean minified;
+
+        @Setup
+        public void setupTrial() throws Exception {
+            moshi = new Moshi.Builder()
+                    .add(new MetadataKotlinJsonAdapterFactory())
+                    .build();
+            URL url = Resources.getResource("largesample" + (minified ? "_minified" : "") + ".json");
+            json = Resources.toString(url, Charsets.UTF_8);
+            adapter = moshi.adapter(KRResponse.class);
+            response = adapter.fromJson(json);
+        }
+
+        @Setup(Level.Invocation)
+        public void setupIteration() {
+            bufferedSource = new Buffer().write(json.getBytes());
+            bufferedSink = new Buffer();
+        }
+
+        public Moshi moshi;
+        public String json;
+        public BufferedSource bufferedSource;
+        public BufferedSink bufferedSink;
+        public KRResponse response;
+        public JsonAdapter<KRResponse> adapter;
+    }
+
+    @State(Scope.Benchmark)
     public static class CodegenMoshiKotlinBuffer {
 
         @Param({"true", "false"})
@@ -368,6 +400,14 @@ public class JmhBenchmark {
     @Benchmark
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
+    public BufferedSink moshi_kotlin_reflective_metadata_buffer_toJson(ReflectiveMoshiKotlinMetadataBuffer param) throws IOException {
+        param.adapter.toJson(param.bufferedSink, param.response);
+        return param.bufferedSink;
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
     public BufferedSink moshi_kotlin_codegen_buffer_toJson(CodegenMoshiKotlinBuffer param) throws IOException {
         param.adapter.toJson(param.bufferedSink, param.response);
         return param.bufferedSink;
@@ -441,6 +481,13 @@ public class JmhBenchmark {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public KRResponse moshi_kotlin_reflective_buffer_fromJson(ReflectiveMoshiKotlinBuffer param) throws IOException {
+        return param.adapter.fromJson(param.bufferedSource);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public KRResponse moshi_kotlin_reflective_metadata_buffer_fromJson(ReflectiveMoshiKotlinMetadataBuffer param) throws IOException {
         return param.adapter.fromJson(param.bufferedSource);
     }
 
