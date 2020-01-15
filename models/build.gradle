@@ -17,18 +17,18 @@ compileKotlin {
 dependencies {
     kapt 'com.google.auto.value:auto-value-annotations:1.7'
     kapt 'com.google.auto.value:auto-value:1.7'
-    kapt 'com.ryanharter.auto.value:auto-value-gson:1.1.1'
+    kapt 'com.ryanharter.auto.value:auto-value-gson:1.2.0'
     kapt 'com.ryanharter.auto.value:auto-value-moshi:0.4.7'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
 
     compileOnly 'com.google.auto.value:auto-value-annotations:1.7'
     compileOnly 'com.ryanharter.auto.value:auto-value-moshi-annotations:0.4.7'
 
-    implementation 'com.ryanharter.auto.value:auto-value-gson-runtime:1.1.1'
+    implementation 'com.ryanharter.auto.value:auto-value-gson-runtime:1.2.0'
     implementation 'com.google.auto.value:auto-value-annotations:1.7'
     api 'com.google.guava:guava:27.1-jre'
     api 'com.squareup.moshi:moshi-kotlin:1.9.2'
-    api 'com.squareup.okio:okio:2.4.1'
+    api 'com.squareup.okio:okio:2.4.3'
     api 'com.squareup.moshi:moshi:1.9.2'
     api 'com.squareup.moshi:moshi-adapters:1.9.2'
     api 'com.google.code.gson:gson:2.8.6'

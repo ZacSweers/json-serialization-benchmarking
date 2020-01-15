@@ -17,6 +17,9 @@ android {
     findByName("androidTest")?.java?.srcDirs("src/androidTest/kotlin")
     findByName("main")?.java?.srcDirs("src/main/kotlin")
   }
+  packagingOptions {
+    exclude 'META-INF/*.kotlin_module'
+  }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -27,7 +30,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 dependencies {
   androidTestImplementation "com.google.guava:guava:27.1-jre"
-  androidTestImplementation "com.squareup.okio:okio:2.4.1"
+  androidTestImplementation "com.squareup.okio:okio:2.4.3"
   androidTestImplementation "androidx.benchmark:benchmark-junit4:1.0.0"
   androidTestImplementation "junit:junit:4.12"
   androidTestImplementation "androidx.test:runner:1.2.0"
