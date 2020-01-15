@@ -35,4 +35,5 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
+    api "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0"
 }
