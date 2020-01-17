@@ -37,6 +37,8 @@ import kotlinx.metadata.KmType
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.isLocal
+import kotlinx.metadata.jvm.JvmFieldSignature
+import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.fieldSignature
@@ -50,6 +52,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Type
 import java.util.AbstractMap.SimpleEntry
+import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.collections.Map.Entry
 
 /** Classes annotated with this are eligible for this adapter. */
@@ -107,7 +110,7 @@ internal class KotlinJsonAdapter<T>(
 
     // Confirm all parameters are present, optional, or nullable.
     for (i in 0 until constructorSize) {
-      if (values[i] === ABSENT_VALUE && !constructor.parameters[i].isOptional) {
+      if (values[i] === ABSENT_VALUE && !constructor.parameters[i].declaresDefaultValue) {
         if (!constructor.parameters[i].km.type!!.isNullable) {
           throw Util.missingProperty(
               constructor.parameters[i].name,
@@ -258,7 +261,7 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
           ParameterData(kmParam, index, parameterTypes[index], parameterAnnotations[index].toList())
         }
 
-    val anyOptional = parameters.any { it.isOptional }
+    val anyOptional = parameters.any { it.declaresDefaultValue }
     val actualConstructor = if (anyOptional) {
       val prefix = jvmConstructor.jvmMethodSignature.removeSuffix(")V")
       val parameterCount = jvmConstructor.parameterTypes.size
@@ -296,21 +299,20 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
         generateSequence(rawType) { it.superclass }
             .mapNotNull { it.toKmClass(false) }
             .flatMap { it.properties.asSequence() }
-            .filterNot { Flag.IS_PRIVATE(it.flags) }
+            .filterNot { Flag.IS_PRIVATE(it.flags) || Flag.IS_PRIVATE_TO_THIS(it.flags) }
             .filter { Flag.Property.IS_VAR(it.flags) }
 
+    val signatureSearcher = JvmSignatureSearcher(rawType)
+
     for (property in allPropertiesSequence.distinctBy { it.name }) {
-      val propertyField = property.fieldSignature?.let { signature ->
-        val signatureString = signature.asString()
-        rawType.declaredFields.find { it.jvmFieldSignature == signatureString }
-      }
+      val propertyField = property.fieldSignature?.let(signatureSearcher::findField)
       val parameterData = parametersByName[property.name]
 
       if (Modifier.isTransient(propertyField?.modifiers ?: 0)) {
         if (parameterData == null) {
           continue
         }
-        require(parameterData.isOptional) {
+        require(parameterData.declaresDefaultValue) {
           "No default value for transient constructor parameter '${parameterData.name}' on type '${rawType.canonicalName}'"
         }
         continue
@@ -324,18 +326,9 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
 
       if (!Flag.Property.IS_VAR(property.flags) && parameterData == null) continue
 
-      val getterMethod = property.getterSignature?.let { signature ->
-        val signatureString = signature.asString()
-        rawType.allMethods().find { it.jvmMethodSignature == signatureString }
-      }
-      val setterMethod = property.setterSignature?.let { signature ->
-        val signatureString = signature.asString()
-        rawType.allMethods().find { it.jvmMethodSignature == signatureString }
-      }
-      val annotationsMethod = property.syntheticMethodForAnnotations?.let { signature ->
-        val signatureString = signature.asString()
-        rawType.allMethods().find { it.jvmMethodSignature == signatureString }
-      }
+      val getterMethod = property.getterSignature?.let(signatureSearcher::findMethod)
+      val setterMethod = property.setterSignature?.let(signatureSearcher::findMethod)
+      val annotationsMethod = property.syntheticMethodForAnnotations?.let(signatureSearcher::findMethod)
 
       val propertyData = PropertyData(
           km = property,
@@ -366,7 +359,7 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
 
     for (parameter in constructorData.parameters) {
       val binding = bindingsByName.remove(parameter.name)
-      require(binding != null || parameter.isOptional) {
+      require(binding != null || parameter.declaresDefaultValue) {
         "No property for required constructor parameter '${parameter.name}' on type '${rawType.canonicalName}'"
       }
       bindings += binding
@@ -386,14 +379,14 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
     return when {
       this === other -> true
       this != null && other != null -> {
-        abbreviatedType == other.abbreviatedType
-            && arguments areEqualTo other.arguments
+        // Note we don't check abbreviatedType because typealiases and their backing types are equal
+        // for our purposes.
+        arguments areEqualTo other.arguments
             && classifier == other.classifier
             && flags == other.flags
             && flexibleTypeUpperBound isEqualTo other.flexibleTypeUpperBound
             && outerType isEqualTo other.outerType
       }
-      this == null && other == null -> true
       else -> false
     }
   }
@@ -423,7 +416,6 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
         variance == other.variance
             && type isEqualTo other.type
       }
-      this == null && other == null -> true
       else -> false
     }
   }
@@ -435,7 +427,6 @@ class MetadataKotlinJsonAdapterFactory : JsonAdapter.Factory {
         typeFlexibilityId == other.typeFlexibilityId
             && type isEqualTo other.type
       }
-      this == null && other == null -> true
       else -> false
     }
   }
@@ -551,8 +542,54 @@ private fun Class<*>.toKmClass(throwOnNotClass: Boolean): KmClass? {
   return classMetadata.toKmClass()
 }
 
-private fun Class<*>.allMethods(): Sequence<Method> {
-  return declaredMethods.asSequence() + methods.asSequence()
+private class JvmSignatureSearcher(clazz: Class<*>) {
+
+  private val methodSignatureCache = mutableMapOf<String, Method>()
+  private val fieldSignatureCache = mutableMapOf<String, Field>()
+  private val methodIterator by lazy(NONE) { clazz.allMethods().iterator() }
+  private val fieldIterator by lazy(NONE) { clazz.allFields().iterator() }
+
+  fun findMethod(signature: JvmMethodSignature): Method? {
+    val signatureString = signature.asString()
+    val cached = methodSignatureCache[signatureString]
+    if (cached != null) return cached
+
+    while (methodIterator.hasNext()) {
+      val next = methodIterator.next()
+      val nextSignature = next.jvmMethodSignature
+      methodSignatureCache[nextSignature] = next
+      if (nextSignature == signatureString) {
+        return next
+      }
+    }
+
+    return null
+  }
+
+  fun findField(signature: JvmFieldSignature): Field? {
+    val signatureString = signature.asString()
+    val cached = fieldSignatureCache[signatureString]
+    if (cached != null) return cached
+
+    while (fieldIterator.hasNext()) {
+      val next = fieldIterator.next()
+      val nextSignature = next.jvmFieldSignature
+      fieldSignatureCache[nextSignature] = next
+      if (nextSignature == signatureString) {
+        return next
+      }
+    }
+
+    return null
+  }
+
+  private fun Class<*>.allMethods(): Sequence<Method> {
+    return declaredMethods.asSequence() + methods.asSequence()
+  }
+
+  private fun Class<*>.allFields(): Sequence<Field> {
+    return declaredFields.asSequence() + fields.asSequence()
+  }
 }
 
 internal data class ParameterData(
@@ -562,7 +599,7 @@ internal data class ParameterData(
     val annotations: List<Annotation>
 ) {
   val name get() = km.name
-  val isOptional get() = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(km.flags)
+  val declaresDefaultValue get() = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(km.flags)
 }
 
 internal data class ConstructorData(
@@ -593,7 +630,7 @@ internal data class ConstructorData(
         args.containsKey(parameter) -> {
           arguments.add(args[parameter])
         }
-        parameter.isOptional -> {
+        parameter.declaresDefaultValue -> {
           arguments += defaultPrimitiveValue(parameter.rawType)
           mask = mask or (1 shl (index % Integer.SIZE))
         }
