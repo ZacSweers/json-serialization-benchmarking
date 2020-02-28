@@ -14,6 +14,7 @@ buildscript {
         }
         maven { url "https://kotlin.bintray.com/kotlinx" }
         jcenter()
+        maven { url 'https://ci.android.com/builds/submitted/6228642/androidx_snapshot/latest/repository/' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:3.6.0"
@@ -22,7 +23,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
-        classpath "androidx.benchmark:benchmark-gradle-plugin:1.0.0"
+        classpath "androidx.benchmark:benchmark-gradle-plugin:1.1.0-SNAPSHOT"
     }
 }
 
@@ -33,5 +34,6 @@ subprojects {
         jcenter()
         maven { url "https://kotlin.bintray.com/kotlinx" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url 'https://ci.android.com/builds/submitted/6228642/androidx_snapshot/latest/repository/' }
     }
 }
