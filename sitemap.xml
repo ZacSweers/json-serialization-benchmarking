@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/changelog/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/contributing/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/android-polymorphic/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/android/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/jmh-polymorphic/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://zacsweers.github.io/json-serialization-benchmarking/results/jmh/</loc>
-     <lastmod>2019-12-01</lastmod>
+     <lastmod>2020-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
