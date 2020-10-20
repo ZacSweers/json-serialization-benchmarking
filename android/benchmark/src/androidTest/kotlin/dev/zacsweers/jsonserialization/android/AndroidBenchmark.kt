@@ -33,7 +33,6 @@ import dev.zacsweers.jsonserialization.models.java_serialization.ResponseJ
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse
 import dev.zacsweers.jsonserialization.models.moshiKotlinReflective.KRResponse
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.KSerializer
 import okio.Buffer
 import okio.BufferedSink
@@ -48,7 +47,6 @@ import java.io.OutputStreamWriter
 import java.io.Reader
 import java.io.Writer
 
-@ImplicitReflectionSerializer
 @LargeTest
 @RunWith(Parameterized::class)
 class AndroidBenchmark(
