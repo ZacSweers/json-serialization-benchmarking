@@ -2,14 +2,10 @@ package dev.zacsweers.jsonserialization.models.kotlinx_serialization
 
 import com.google.gson.annotations.SerializedName
 import com.squareup.moshi.Json
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 
-@UseExperimental(UnstableDefault::class)
-@ImplicitReflectionSerializer
 @Serializable
 class Response {
 
@@ -23,13 +19,13 @@ class Response {
     var isRealJson: Boolean = false
 
     fun stringify(serializer: KSerializer<Response>): String {
-        return kotlinx.serialization.json.Json.stringify(serializer, this)
+        return kotlinx.serialization.json.Json.encodeToString(serializer, this)
     }
 
     companion object {
         @JvmStatic
         fun parse(serializer: KSerializer<Response>, str: String): Response {
-            return kotlinx.serialization.json.Json.parse(serializer, str)
+            return kotlinx.serialization.json.Json.decodeFromString(serializer, str)
         }
 
         @JvmStatic

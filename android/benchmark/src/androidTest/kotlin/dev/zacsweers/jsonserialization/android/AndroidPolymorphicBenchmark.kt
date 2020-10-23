@@ -17,7 +17,6 @@ import dev.zacsweers.jsonserialization.models.model_av.AbstractResponseAV
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGAbstractResponse
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse
-import kotlinx.serialization.ImplicitReflectionSerializer
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -31,7 +30,6 @@ import java.io.OutputStreamWriter
 import java.io.Reader
 import java.io.Writer
 
-@ImplicitReflectionSerializer
 @LargeTest
 @RunWith(Parameterized::class)
 class AndroidPolymorphicBenchmark(
