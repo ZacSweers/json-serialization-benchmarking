@@ -12,11 +12,16 @@ targetCompatibility = 1.8
 // you can run `./gradlew jmh -Pjmh=JmhPolymorphicBenchmark`)
 jmh {
     jmhVersion = jmh_version
+    duplicateClassesStrategy = 'exclude'
 
     if (project.hasProperty("jmh")) {
         include = [".*" + project.jmh + ".*"]
         println("JMH: " + include)
     }
+}
+
+tasks.named('jmhJar', AbstractCopyTask).configure {
+  it.duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 dependencies {
