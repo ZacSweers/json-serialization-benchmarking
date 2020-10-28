@@ -5,7 +5,7 @@ ext.jmh_version = '1.22'
 buildscript {
     ext.kotlin_version = '1.4.10'
     ext.serialization_version = '1.0.0'
-    ext.jmh_version = '1.22'
+    ext.jmh_version = '1.26'
     repositories {
         google()
         mavenCentral()
@@ -16,12 +16,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:3.6.0"
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.0"
+        classpath "com.android.tools.build:gradle:4.0.0"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.2"
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.21"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+        classpath "com.github.jengelman.gradle.plugins:shadow:6.0.0"
         classpath "androidx.benchmark:benchmark-gradle-plugin:1.0.0"
     }
 }
