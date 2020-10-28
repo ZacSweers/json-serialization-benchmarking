@@ -133,6 +133,9 @@ private enum class ResultType(val description: String, val groupings: List<Group
           },
           Grouping("Moshi Kotlin") {
             "moshi_kotlin" in it
+          },
+          Grouping("MoshiX Kotlin (Metadata)") {
+            "moshix_kotlin" in it
           }
       )
   )

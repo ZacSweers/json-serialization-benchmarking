@@ -3,7 +3,7 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "androidx.benchmark"
 
 android {
-  compileSdkVersion 29
+  compileSdkVersion 30
 
   defaultConfig {
     minSdkVersion 21
