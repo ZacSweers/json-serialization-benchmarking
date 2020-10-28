@@ -43,19 +43,19 @@ private fun printResults(type: PolymorphicResultType, results: List<Analysis>) {
       grouping.matchFunction(it.benchmark)
     }
   }
-  val benchmarkLength = results.maxBy { it.benchmark.length }!!.benchmark.length
-  val scoreLength = results.maxBy { it.formattedScore.length }!!.formattedScore.length
+  val benchmarkLength = results.maxByOrNull { it.benchmark.length }!!.benchmark.length
+  val scoreLength = results.maxByOrNull { it.formattedScore.length }!!.formattedScore.length
 
   check(groupedResults.values.flatten().size == results.size) {
     "Missing information!"
   }
 
   val output = buildString {
-    appendln()
+    appendLine()
     append(type.description)
-    appendln(':')
-    appendln()
-    appendln("```")
+    appendLine(':')
+    appendLine()
+    appendLine("```")
     groupedResults.entries
         .joinTo(this, "\n\n", postfix = "\n```") { (grouping, matchedAnalyses) ->
           val content = matchedAnalyses.sortedBy { it.score }
