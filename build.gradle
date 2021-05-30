@@ -1,6 +1,6 @@
 ext.kotlin_version = '1.4.10'
 ext.serialization_version = '1.0.0'
-ext.jmh_version = '1.22'
+ext.jmh_version = '1.32'
 
 buildscript {
     ext.kotlin_version = '1.4.10'
@@ -17,7 +17,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:3.6.0"
-        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.0"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:0.5.3"
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.21"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
