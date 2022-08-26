@@ -85,11 +85,11 @@ private fun printResults(type: ResultType, results: List<Analysis>) {
   }
 
   val output = buildString {
-    appendln()
+    appendLine()
     append(type.description)
-    appendln(':')
-    appendln()
-    appendln("```")
+    appendLine(':')
+    appendLine()
+    appendLine("```")
     groupedResults.entries
         .joinTo(this, "\n\n", postfix = "\n```") { (grouping, matchedAnalyses) ->
           val content = matchedAnalyses.sortedBy { it.score }
