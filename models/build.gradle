@@ -4,8 +4,8 @@ apply plugin: 'org.jetbrains.kotlin.kapt'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'idea'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 compileKotlin {
     kotlinOptions {
