@@ -1,6 +1,6 @@
 ext.kotlin_version = "1.7.22"
-ext.serialization_version = '1.5.0-RC'
-ext.jmh_version = '1.36'
+ext.serialization_version = "1.5.0-RC"
+ext.jmh_version = "1.36"
 
 buildscript {
     ext.kotlin_version = "1.7.22"
@@ -12,7 +12,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath "com.android.tools.build:gradle:7.4.0"
         classpath "me.champeau.jmh:jmh-gradle-plugin:0.6.6"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
