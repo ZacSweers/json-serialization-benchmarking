@@ -1,9 +1,9 @@
-ext.kotlin_version = "1.7.22"
+ext.kotlin_version = "1.8.10"
 ext.serialization_version = "1.5.0-RC"
 ext.jmh_version = "1.36"
 
 buildscript {
-    ext.kotlin_version = "1.7.22"
+    ext.kotlin_version = "1.8.10"
     ext.serialization_version = "1.5.0-RC"
     ext.jmh_version = "1.36"
     repositories {
