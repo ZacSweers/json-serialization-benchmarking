@@ -1,0 +1,54 @@
+plugins {
+    id "com.android.library"
+    id "androidx.benchmark"
+    id "org.jetbrains.kotlin.android"
+}
+
+android {
+    namespace "dev.zacsweers.jsonserialization.android"
+    compileSdk 33
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        minSdk 24
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.benchmark.junit4.AndroidBenchmarkRunner"
+    }
+
+    testBuildType = "release"
+    buildTypes {
+        debug {
+            // Since debuggable can"t be modified by gradle for library modules,
+            // it must be done in a manifest - see src/androidTest/AndroidManifest.xml
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "benchmark-proguard-rules.pro"
+        }
+        release {
+            isDefault = true
+        }
+    }
+}
+
+configurations {
+    androidTest.extendsFrom(implementation)
+}
+
+dependencies {
+    androidTestImplementation "com.google.guava:guava:31.1-jre"
+    androidTestImplementation "com.squareup.okio:okio:3.3.0"
+    androidTestImplementation "androidx.benchmark:benchmark-junit4:1.1.1"
+    androidTestImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test:runner:1.5.2"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    implementation project(":models")
+}

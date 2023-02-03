@@ -1,7 +1,7 @@
-apply plugin: 'java'
-apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "java"
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: "me.champeau.jmh"
+//apply plugin: "com.github.johnrengelman.shadow"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -14,14 +14,14 @@ jmh {
     jmhVersion = jmh_version
 
     if (project.hasProperty("jmh")) {
-        include = [".*" + project.jmh + ".*"]
-        println("JMH: " + include)
+        includes = [".*" + project.jmh + ".*"]
+        println("JMH: " + includes)
     }
 }
 
 dependencies {
-    jmh 'com.google.guava:guava:27.1-jre'
-//    jmh 'com.squareup.okio:okio:2.2.1'
+    jmh "com.google.guava:guava:31.1-jre"
+//    jmh "com.squareup.okio:okio:2.2.1"
     implementation "org.openjdk.jmh:jmh-core:$jmh_version"
     implementation project(":models")
 }

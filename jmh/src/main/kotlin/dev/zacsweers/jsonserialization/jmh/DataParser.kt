@@ -77,10 +77,10 @@ JmhBenchmark.moshi_reflective_string_toJson                false  thrpt   25  15
 }
 
 private fun printResults(type: ResultType, results: List<Analysis>) {
-  val groupedResults = type.groupings.associate { grouping ->
-    grouping to results.filter {
-      grouping.matchFunction(it.benchmark)
-    }
+  val groupedResults = type.groupings.associateWith { grouping ->
+      results.filter {
+          grouping.matchFunction(it.benchmark)
+      }
   }
   val benchmarkLength = results.maxBy { it.benchmark.length }!!.benchmark.length
   val scoreLength = results.maxBy { it.score.toString().length }!!.score.toString().length
@@ -91,17 +91,23 @@ private fun printResults(type: ResultType, results: List<Analysis>) {
   }
 
   val output = buildString {
-    appendln()
-    append(type.description)
-    appendln(':')
-    appendln()
-    appendln("```")
-    groupedResults.entries
-        .joinTo(this, "\n\n", postfix = "\n```") { (grouping, matchedAnalyses) ->
-          val content = matchedAnalyses.sortedByDescending { it.score }
-              .joinToString("\n") { it.formattedString(benchmarkLength, scoreLength, errorLength) }
-          "${grouping.name}\n$content"
-        }
+      appendLine()
+      append(type.description)
+      appendLine(':')
+      appendLine()
+      appendLine("```")
+      groupedResults.entries
+          .joinTo(this, "\n\n", postfix = "\n```") { (grouping, matchedAnalyses) ->
+              val content = matchedAnalyses.sortedByDescending { it.score }
+                  .joinToString("\n") {
+                      it.formattedString(
+                          benchmarkLength,
+                          scoreLength,
+                          errorLength
+                      )
+                  }
+              "${grouping.name}\n$content"
+          }
   }
 
   println(output)
