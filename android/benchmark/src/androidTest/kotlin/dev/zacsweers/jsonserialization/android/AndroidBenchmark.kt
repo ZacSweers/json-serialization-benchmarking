@@ -18,6 +18,8 @@ package dev.zacsweers.jsonserialization.android
 import androidx.benchmark.junit4.BenchmarkRule
 import androidx.benchmark.junit4.measureRepeated
 import androidx.test.filters.LargeTest
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Charsets
 import com.google.common.io.Resources
 import com.google.gson.Gson
@@ -28,11 +30,17 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedJsonAdapterFactory
 import dev.zacsweers.jsonserialization.models.adapter.GeneratedTypeAdapterFactory
+import dev.zacsweers.jsonserialization.models.jackson.JackResponse
+import dev.zacsweers.jsonserialization.models.jacksonKotlin.JKResponse
 import dev.zacsweers.jsonserialization.models.kotlinx_serialization.Response
 import dev.zacsweers.jsonserialization.models.java_serialization.ResponseJ
 import dev.zacsweers.jsonserialization.models.model_av.ResponseAV
 import dev.zacsweers.jsonserialization.models.moshiKotlinCodegen.KCGResponse
 import dev.zacsweers.jsonserialization.models.moshiKotlinReflective.KRResponse
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import kotlinx.serialization.KSerializer
 import okio.Buffer
 import okio.BufferedSink
@@ -236,6 +244,40 @@ class AndroidBenchmark(
     }
   }
 
+  class JacksonDatabind(json: String) {
+    val mapper = JsonMapper()
+    val response: JackResponse = mapper.readValue(json, JackResponse::class.java)
+  }
+
+  class JacksonDatabindBuffer(private val json: String) {
+    val mapper = JsonMapper()
+    val response: JackResponse = mapper.readValue(json, JackResponse::class.java)
+    lateinit var bufferedInput: BufferedInputStream
+    lateinit var bufferedOutput: BufferedOutputStream
+
+    fun setupIteration() {
+      bufferedInput = BufferedInputStream(ByteArrayInputStream(json.toByteArray()))
+      bufferedOutput = BufferedOutputStream(ByteArrayOutputStream())
+    }
+  }
+
+  class JacksonKotlinDatabind(json: String) {
+    val mapper = jacksonObjectMapper()
+    val response: JKResponse = mapper.readValue(json, JKResponse::class.java)
+  }
+
+  class JacksonKotlinDatabindBuffer(private val json: String) {
+    val mapper = jacksonObjectMapper()
+    val response: JKResponse = mapper.readValue(json, JKResponse::class.java)
+    lateinit var bufferedInput: BufferedInputStream
+    lateinit var bufferedOutput: BufferedOutputStream
+
+    fun setupIteration() {
+      bufferedInput = BufferedInputStream(ByteArrayInputStream(json.toByteArray()))
+      bufferedOutput = BufferedOutputStream(ByteArrayOutputStream())
+    }
+  }
+
   @get:Rule
   val benchmarkRule = BenchmarkRule()
   @Suppress("UnstableApiUsage")
@@ -381,5 +423,57 @@ class AndroidBenchmark(
   fun gson_autovalue_buffer_fromJson() = benchmarkRule.measureRepeated {
     val param = runWithTimingDisabled { AVGsonBuffer(json).also { it.setupIteration() } }
     param.adapter.fromJson(param.source)
+  }
+
+  @Test
+  fun jackson_string_fromJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonDatabind(json) }
+    param.mapper.readValue(json, JackResponse::class.java)
+  }
+
+  @Test
+  fun jackson_buffer_fromJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonDatabindBuffer(json).also { it.setupIteration() } }
+    param.mapper.readValue(param.bufferedInput, JackResponse::class.java)
+  }
+
+  @Test
+  fun jackson_string_toJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonDatabind(json) }
+    param.mapper.writeValueAsString(param.response)
+  }
+
+  @Test
+  fun jackson_buffer_toJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonDatabindBuffer(json).also { it.setupIteration() } }
+    param.mapper.writeValue(param.bufferedOutput, param.response)
+  }
+
+  @Test
+  fun jackson_kotlin_string_fromJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonKotlinDatabind(json) }
+    param.mapper.readValue(json, JKResponse::class.java)
+  }
+
+  @Test
+  fun jackson_kotlin_string_toJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled { JacksonKotlinDatabind(json) }
+    param.mapper.writeValueAsString(param.response)
+  }
+
+  @Test
+  fun jackson_kotlin_buffer_fromJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled {
+      JacksonKotlinDatabindBuffer(json).also { it.setupIteration() }
+    }
+    param.mapper.readValue(param.bufferedInput, JKResponse::class.java)
+  }
+
+  @Test
+  fun jackson_kotlin_buffer_toJson() = benchmarkRule.measureRepeated {
+    val param = runWithTimingDisabled {
+      JacksonKotlinDatabindBuffer(json).also { it.setupIteration() }
+    }
+    param.mapper.writeValue(param.bufferedOutput, param.response)
   }
 }
