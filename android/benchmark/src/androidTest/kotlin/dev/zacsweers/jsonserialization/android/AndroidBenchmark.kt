@@ -272,7 +272,7 @@ class AndroidBenchmark(
       val javaType = mapper.typeFactory.constructType(JackResponse::class.java)
       reader = mapper.readerFor(javaType)
       writer = mapper.writerFor(javaType)
-      response = reader.readValue(source, JackResponse::class.java)
+      response = reader.readValue(json, JackResponse::class.java)
     }
 
     fun setupIteration() {
@@ -307,7 +307,7 @@ class AndroidBenchmark(
       val javaType = mapper.typeFactory.constructType(JKResponse::class.java)
       reader = mapper.readerFor(javaType)
       writer = mapper.writerFor(javaType)
-      response = reader.readValue(source)
+      response = reader.readValue(json)
     }
 
     fun setupIteration() {
